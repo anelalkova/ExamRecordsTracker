@@ -1,0 +1,13 @@
+package mk.finki.ukim.mk.exam_records.service.domain;
+
+import mk.finki.ukim.mk.exam_records.models.User;
+import mk.finki.ukim.mk.exam_records.models.UserRole;
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+public interface UserDomainService extends UserDetailsService {
+    User register(String email, String password, String repeatPassword, String name, String surname, Long roleId, Long index, String studentProgram);
+
+    User login(String email, String password);
+
+    User findByEmail(String email);
+}
