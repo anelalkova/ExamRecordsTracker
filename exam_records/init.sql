@@ -43,15 +43,23 @@ insert into exam_records.session(name) values ('first_midterm'), ('second_midter
 
 create table if not exists exam_records.exam(
     id serial primary key,
-    subject_id int not null,
+    subject_code int not null,
     session_id int not null,
     date date not null,
     num_students int not null,
     num_rooms int not null,
     start_time time not null,
     end_time time not null,
-    foreign key (subject_id) references exam_records.subject(code),
+    foreign key (subject_code) references exam_records.subject(code),
     foreign key (session_id) references exam_records.session(id)
+);
+
+create table if not exists exam_records.subject_staff (
+                                                          subject_id int not null,
+                                                          user_id int not null,
+                                                          primary key (subject_id, user_id),
+                                                          foreign key (subject_id) references exam_records.subject(code) on delete cascade,
+                                                          foreign key (user_id) references exam_records.users(id) on delete cascade
 );
 
 create index if not exists idx_subject_semester_year on exam_records.subject (semester_id, year);

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -61,9 +62,14 @@ public class JwtHelper {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("roles", userDetails.getAuthorities());
+        List<String> roles = userDetails.getAuthorities()
+                .stream()
+                .map(authority -> authority.getAuthority())
+                .toList();
+        extraClaims.put("roles", roles);
         return buildToken(extraClaims, userDetails.getUsername(), JwtConstants.EXPIRATION_TIME);
     }
+
 
     private boolean isExpired(String token) {
         return extractExpiration(token).before(new Date());

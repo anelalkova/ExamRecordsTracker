@@ -54,6 +54,12 @@ public class JwtSecurityWebConfig {
                                         "/api/users/login"
                                 )
                                 .permitAll()
+                                .requestMatchers(
+                                        "/api/users/**",
+                                        "/api/subjects/**",
+                                        "/api/exams/**"
+                                )
+                                .hasAnyRole("ASSISTANT","PROFESSOR")
                 )
                 .sessionManagement(sessionManagementConfigurer ->
                         sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

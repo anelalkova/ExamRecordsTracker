@@ -7,9 +7,9 @@ import java.util.List;
 
 @Data
 @Entity
+@Table(name = "subject", schema = "exam_records")
 public class Subject {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long code;
 
     private String name;
@@ -22,6 +22,7 @@ public class Subject {
     @ManyToMany
     @JoinTable(
             name = "subject_staff",
+            schema = "exam_records",
             joinColumns = @JoinColumn(name = "subject_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )

@@ -1,10 +1,12 @@
 package mk.finki.ukim.mk.exam_records.service.application;
 
+import mk.finki.ukim.mk.exam_records.models.UserRole;
 import mk.finki.ukim.mk.exam_records.models.dto.CreateUserDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.DisplayUserDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.LoginResponseDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.LoginUserDTO;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserApplicationService {
@@ -14,4 +16,7 @@ public interface UserApplicationService {
 
     Optional<DisplayUserDTO> findByEmail(String email);
 
+    List<DisplayUserDTO> findAll();
+
+    List<DisplayUserDTO> findAllByRole(Long roleId);
 }

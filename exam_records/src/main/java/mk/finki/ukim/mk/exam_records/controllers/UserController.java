@@ -9,10 +9,9 @@ import mk.finki.ukim.mk.exam_records.models.exceptions.InvalidUserCredentialsExc
 import mk.finki.ukim.mk.exam_records.models.exceptions.PasswordsDoNotMatchException;
 import mk.finki.ukim.mk.exam_records.service.application.UserApplicationService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -46,5 +45,13 @@ public class UserController {
         }
     }
 
+    @GetMapping("/findAll")
+    public List<DisplayUserDTO> findAll() {
+        return userApplicationService.findAll();
+    }
 
+    @GetMapping("/findByRole/{roleId}")
+    public List<DisplayUserDTO> findByRole(@PathVariable Long roleId) {
+        return userApplicationService.findAllByRole(roleId);
+    }
 }
