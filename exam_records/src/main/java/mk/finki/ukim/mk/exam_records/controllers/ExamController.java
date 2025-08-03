@@ -20,7 +20,7 @@ public class ExamController {
         this.examApplicationService = examApplicationService;
     }
 
-    @GetMapping("/findAll")
+    @GetMapping("/find-all")
     public List<DisplayExamDTO> findAll(){
         return examApplicationService.findAll();
     }

@@ -25,20 +25,14 @@ public class Exam {
     @Column(name = "date")
     private LocalDate dateOfExam;
 
-    private Integer numStudents;
-
-    private Integer numRooms;
-
     private LocalTime startTime;
 
     private LocalTime endTime;
 
-    public Exam(Subject subject, Session session, LocalDate dateOfExam, Integer numRooms, Integer numStudents, LocalTime startTime, LocalTime endTime) {
+    public Exam(Subject subject, Session session, LocalDate dateOfExam, LocalTime startTime, LocalTime endTime) {
         this.subject = subject;
         this.session = session;
         this.dateOfExam = dateOfExam;
-        this.numRooms = numRooms;
-        this.numStudents = numStudents;
         this.startTime = startTime;
         this.endTime = endTime;
     }

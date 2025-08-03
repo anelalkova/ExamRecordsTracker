@@ -59,7 +59,7 @@ public class JwtSecurityWebConfig {
                                         "/api/subjects/**",
                                         "/api/exams/**"
                                 )
-                                .hasAnyRole("ASSISTANT","PROFESSOR")
+                                .hasAnyRole("TEACHER")
                 )
                 .sessionManagement(sessionManagementConfigurer ->
                         sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

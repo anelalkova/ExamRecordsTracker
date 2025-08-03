@@ -26,7 +26,7 @@ public class ExamDomainServiceImpl implements ExamDomainService {
     }
 
     @Override
-    public Exam create(Long subjectCode, Long sessionId, LocalDate dateOfExam, Integer numStudents, Integer numRooms, LocalTime startTime, LocalTime endTime) {
+    public Exam create(Long subjectCode, Long sessionId, LocalDate dateOfExam, LocalTime startTime, LocalTime endTime) {
         Exam exam = new Exam();
         Subject subject = subjectDomainService.findByCode(subjectCode);
         if(subject != null){
@@ -37,8 +37,6 @@ public class ExamDomainServiceImpl implements ExamDomainService {
             exam.setSession(session);
         }
         exam.setDateOfExam(dateOfExam);
-        exam.setNumRooms(numRooms);
-        exam.setNumStudents(numStudents);
         exam.setStartTime(startTime);
         exam.setEndTime(endTime);
         return examRepository.save(exam);

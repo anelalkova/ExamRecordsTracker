@@ -1,11 +1,9 @@
 package mk.finki.ukim.mk.exam_records.service.domain.impl;
 
-import mk.finki.ukim.mk.exam_records.models.Semester;
 import mk.finki.ukim.mk.exam_records.models.Subject;
 import mk.finki.ukim.mk.exam_records.models.User;
-import mk.finki.ukim.mk.exam_records.repository.SemesterRepository;
+import mk.finki.ukim.mk.exam_records.models.enumeration.Semester;
 import mk.finki.ukim.mk.exam_records.repository.SubjectRepository;
-import mk.finki.ukim.mk.exam_records.service.domain.SemesterDomainService;
 import mk.finki.ukim.mk.exam_records.service.domain.SubjectDomainService;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +17,10 @@ public class SubjectDomainServiceImpl implements SubjectDomainService {
 
     private final SubjectRepository subjectRepository;
     private final UserDomainServiceImpl userDomainService;
-    private final SemesterRepository semesterRepository;
-    private final SemesterDomainServiceImpl semesterDomainService;
 
-    public SubjectDomainServiceImpl(SubjectRepository subjectRepository, UserDomainServiceImpl userDomainService, SemesterRepository semesterRepository, SemesterDomainServiceImpl semesterDomainService) {
+    public SubjectDomainServiceImpl(SubjectRepository subjectRepository, UserDomainServiceImpl userDomainService) {
         this.subjectRepository = subjectRepository;
         this.userDomainService = userDomainService;
-        this.semesterRepository = semesterRepository;
-        this.semesterDomainService = semesterDomainService;
     }
 
     @Override
@@ -35,7 +29,7 @@ public class SubjectDomainServiceImpl implements SubjectDomainService {
     }
 
     @Override
-    public Subject create(Long code, String name, Integer year, Long semesterId, List<Long> staffIds) {
+    public Subject create(Long code, String name, Integer year, Semester semester, List<Long> staffIds) {
         if (subjectRepository.existsById(code)) {
             throw new IllegalArgumentException("Subject with code " + code + " already exists.");
         }
@@ -44,9 +38,6 @@ public class SubjectDomainServiceImpl implements SubjectDomainService {
         subject.setCode(code);
         subject.setName(name);
         subject.setYear(year);
-
-        Semester semester = semesterDomainService.findById(semesterId)
-                .orElseThrow(() -> new IllegalArgumentException("Semester with id " + semesterId + " not found"));
         subject.setSemester(semester);
 
         List<User> staff = staffIds.stream()
@@ -65,15 +56,12 @@ public class SubjectDomainServiceImpl implements SubjectDomainService {
     }
 
     @Override
-    public Subject update(Long code, String name, Integer year, Long semesterId, List<Long> staffIds) {
+    public Subject update(Long code, String name, Integer year, Semester semester, List<Long> staffIds) {
         Subject subject = subjectRepository.findById(code)
                 .orElseThrow(() -> new IllegalArgumentException("Subject with code " + code + " not found"));
 
         subject.setName(name);
         subject.setYear(year);
-
-        Semester semester = semesterDomainService.findById(semesterId)
-                .orElseThrow(() -> new IllegalArgumentException("Semester with id " + semesterId + " not found"));
         subject.setSemester(semester);
 
         List<User> staff = staffIds.stream()
@@ -82,7 +70,7 @@ public class SubjectDomainServiceImpl implements SubjectDomainService {
                 .map(Optional::get)
                 .filter(user -> {
                     String role = user.getRole().getRole();
-                    return "ROLE_ASSISTANT".equals(role) || "ROLE_PROFESSOR".equals(role);
+                    return "ROLE_TEACHER".equals(role);
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
 

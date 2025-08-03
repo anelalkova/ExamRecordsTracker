@@ -17,7 +17,7 @@ public class SubjectController {
         this.subjectApplicationService = subjectApplicationService;
     }
 
-    @GetMapping("/findByCode/{code}")
+    @GetMapping("/find-by-code/{code}")
     public ResponseEntity<DisplaySubjectDTO> findByCode(@PathVariable Long code) {
         return subjectApplicationService.findByCode(code)
                 .map(ResponseEntity::ok)

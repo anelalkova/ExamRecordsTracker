@@ -8,12 +8,10 @@ import java.time.LocalTime;
 public record CreateExamDTO(Long subjectCode,
                             Long sessionId,
                             LocalDate dateOfExam,
-                            Integer numStudents,
-                            Integer numRooms,
                             LocalTime startTime,
                             LocalTime endTime) {
     public Exam toExam(Subject subject, Session session) {
-        return new Exam(subject, session, dateOfExam, numRooms, numRooms, startTime, endTime);
+        return new Exam(subject, session, dateOfExam, startTime, endTime);
     }
 }
 

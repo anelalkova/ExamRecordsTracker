@@ -25,8 +25,6 @@ public class ExamApplicationServiceImpl implements ExamApplicationService {
             createExamDto.subjectCode(),
             createExamDto.sessionId(),
             createExamDto.dateOfExam(),
-            createExamDto.numStudents(),
-            createExamDto.numRooms(),
             createExamDto.startTime(),
             createExamDto.endTime()
         )));

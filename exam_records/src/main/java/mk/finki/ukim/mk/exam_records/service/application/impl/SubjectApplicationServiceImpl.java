@@ -28,7 +28,7 @@ public class SubjectApplicationServiceImpl implements SubjectApplicationService 
                 createSubjectDto.code(),
                 createSubjectDto.name(),
                 createSubjectDto.year(),
-                createSubjectDto.semesterId(),
+                createSubjectDto.semester(),
                 createSubjectDto.staffIds()
         );
         return Optional.of(DisplaySubjectDTO.from(subject));
@@ -40,7 +40,7 @@ public class SubjectApplicationServiceImpl implements SubjectApplicationService 
                 createSubjectDto.code(),
                 createSubjectDto.name(),
                 createSubjectDto.year(),
-                createSubjectDto.semesterId(),
+                createSubjectDto.semester(),
                 createSubjectDto.staffIds()
         );
         return Optional.of(DisplaySubjectDTO.from(subject));    }

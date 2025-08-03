@@ -1,7 +1,7 @@
 package mk.finki.ukim.mk.exam_records.models.dto;
 
-import mk.finki.ukim.mk.exam_records.models.Semester;
 import mk.finki.ukim.mk.exam_records.models.Subject;
+import mk.finki.ukim.mk.exam_records.models.enumeration.Semester;
 
 import java.util.List;
 

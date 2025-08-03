@@ -2,6 +2,7 @@ package mk.finki.ukim.mk.exam_records.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import mk.finki.ukim.mk.exam_records.models.enumeration.Semester;
 
 import java.util.List;
 
@@ -16,7 +17,6 @@ public class Subject {
 
     private Integer year;
 
-    @ManyToOne
     private Semester semester;
 
     @ManyToMany

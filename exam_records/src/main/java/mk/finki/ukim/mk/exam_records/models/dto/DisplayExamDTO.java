@@ -9,8 +9,6 @@ import java.time.LocalTime;
 public record DisplayExamDTO(DisplaySubjectDTO subject,
                              Session session,
                              LocalDate dateOfExam,
-                             Integer numStudents,
-                             Integer numRooms,
                              LocalTime startTime,
                              LocalTime endTime) {
     public static DisplayExamDTO from(Exam exam) {
@@ -18,8 +16,6 @@ public record DisplayExamDTO(DisplaySubjectDTO subject,
                 DisplaySubjectDTO.from(exam.getSubject()),
                 exam.getSession(),
                 exam.getDateOfExam(),
-                exam.getNumStudents(),
-                exam.getNumRooms(),
                 exam.getStartTime(),
                 exam.getEndTime()
         );
