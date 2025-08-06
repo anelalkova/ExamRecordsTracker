@@ -2,6 +2,7 @@ package mk.finki.ukim.mk.exam_records.service.domain.impl;
 
 import mk.finki.ukim.mk.exam_records.models.User;
 import mk.finki.ukim.mk.exam_records.models.UserRole;
+import mk.finki.ukim.mk.exam_records.models.constants.Roles;
 import mk.finki.ukim.mk.exam_records.models.exceptions.*;
 import mk.finki.ukim.mk.exam_records.repository.UserRepository;
 import mk.finki.ukim.mk.exam_records.repository.UserRoleRepository;
@@ -27,7 +28,7 @@ public class UserDomainServiceImpl implements UserDomainService {
     }
 
     @Override
-    public User register(String email, String password, String repeatPassword, String name, String surname, Long roleId, Long index, String studentProgram) {
+    public User register(String email, String password, String repeatPassword, String name, String surname, Long index, String studentProgram) {
         if (email == null || email.isEmpty() || password == null || password.isEmpty())
             throw new InvalidEmailOrPasswordException("The email or password you entered is invalid");
         if (!password.equals(repeatPassword)) throw new PasswordsDoNotMatchException("The passwords do not match");
@@ -38,11 +39,12 @@ public class UserDomainServiceImpl implements UserDomainService {
         user.setPassword(passwordEncoder.encode(password));
         user.setName(name);
         user.setSurname(surname);
-        Optional<UserRole> role = userRoleRepository.findById(roleId);
-        user.setRole(role.get());
-        if(role.get().getRole().equals("ROLE_STUDENT")){
+        if(index != null || studentProgram != null || index != -1 || studentProgram != ""){
+            user.setRole(userRoleRepository.findByRole(Roles.STUDENT));
             user.setIndex(index);
             user.setStudentProgram(studentProgram);
+        }else{
+            user.setRole(userRoleRepository.findByRole(Roles.TEACHER));
         }
         return userRepository.save(user);
     }

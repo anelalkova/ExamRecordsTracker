@@ -35,7 +35,6 @@ public class UserApplicationServiceImpl implements UserApplicationService {
                 createUserDto.repeatPassword(),
                 createUserDto.name(),
                 createUserDto.surname(),
-                createUserDto.roleId(),
                 createUserDto.index(),
                 createUserDto.studentProgram()
         );

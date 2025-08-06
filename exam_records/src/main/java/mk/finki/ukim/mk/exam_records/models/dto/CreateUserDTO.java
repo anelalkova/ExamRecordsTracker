@@ -9,7 +9,6 @@ public record CreateUserDTO(
         String repeatPassword,
         String name,
         String surname,
-        Long roleId,
         Long index,
         String studentProgram
 ) {

@@ -30,9 +30,10 @@ public class JwtSecurityWebConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173"));
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfiguration.setAllowedHeaders(List.of("*"));
+        corsConfiguration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
@@ -51,7 +52,8 @@ public class JwtSecurityWebConfig {
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",
                                         "/api/users/register",
-                                        "/api/users/login"
+                                        "/api/users/login",
+                                        "/api/roles/**"
                                 )
                                 .permitAll()
                                 .requestMatchers(
