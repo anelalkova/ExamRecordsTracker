@@ -38,10 +38,11 @@ public class User implements UserDetails {
 
     private Long index;
 
-    private String studentProgram;
+    @ManyToOne(optional = false)
+    private StudentProgram studentProgram;
 
     public User(String name, String surname, String email, String password,
-                UserRole role, Long index, String studentProgram) {
+                UserRole role, Long index, StudentProgram studentProgram) {
         this.name = name;
         this.surname = surname;
         this.email = email;

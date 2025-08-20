@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserDomainService extends UserDetailsService {
-    User register(String email, String password, String repeatPassword, String name, String surname, Long index, String studentProgram);
+    User register(String email, String password, String repeatPassword, String name, String surname, Long index, Long studentProgramId);
 
     User login(String email, String password);
 

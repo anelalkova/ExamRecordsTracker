@@ -36,7 +36,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
                 createUserDto.name(),
                 createUserDto.surname(),
                 createUserDto.index(),
-                createUserDto.studentProgram()
+                createUserDto.studentProgramId()
         );
         return Optional.of(DisplayUserDTO.from(user));
     }

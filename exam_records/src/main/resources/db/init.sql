@@ -2,10 +2,10 @@ create schema if not exists exam_records;
 
 create table if not exists exam_records.subject
 (
-    code        int primary key,
-    name        varchar(255) not null,
-    semester    varchar(255) not null,
-    year        int          not null
+    code     int primary key,
+    name     varchar(255) not null,
+    semester varchar(255) not null,
+    year     int          not null
 );
 
 create table if not exists exam_records.userrole
@@ -80,3 +80,33 @@ create table if not exists exam_records.exam_room_reservation
     foreign key (room_id) references exam_records.room (id) on delete cascade,
     foreign key (exam_id) references exam_records.exam (id) on delete cascade
 );
+
+create table if not exists exam_records.student_program
+(
+    id   serial primary key,
+    name varchar(255) not null,
+    year int          not null
+);
+
+ALTER TABLE IF EXISTS exam_records.users
+    ADD COLUMN IF NOT EXISTS student_program_id int;
+
+ALTER TABLE IF EXISTS exam_records.users
+    DROP COLUMN IF EXISTS student_program;
+
+DO
+$$
+    BEGIN
+        IF NOT EXISTS (SELECT 1
+                       FROM information_schema.table_constraints
+                       WHERE constraint_schema = 'exam_records'
+                         AND table_name = 'users'
+                         AND constraint_name = 'fk_student_program') THEN
+            ALTER TABLE exam_records.users
+                ADD CONSTRAINT fk_student_program
+                    FOREIGN KEY (student_program_id)
+                        REFERENCES exam_records.student_program (id)
+                        ON DELETE CASCADE;
+        END IF;
+    END
+$$;

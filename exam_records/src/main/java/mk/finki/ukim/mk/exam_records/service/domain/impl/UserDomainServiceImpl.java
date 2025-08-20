@@ -1,11 +1,13 @@
 package mk.finki.ukim.mk.exam_records.service.domain.impl;
 
+import mk.finki.ukim.mk.exam_records.models.StudentProgram;
 import mk.finki.ukim.mk.exam_records.models.User;
 import mk.finki.ukim.mk.exam_records.models.UserRole;
 import mk.finki.ukim.mk.exam_records.models.constants.Roles;
 import mk.finki.ukim.mk.exam_records.models.exceptions.*;
 import mk.finki.ukim.mk.exam_records.repository.UserRepository;
 import mk.finki.ukim.mk.exam_records.repository.UserRoleRepository;
+import mk.finki.ukim.mk.exam_records.service.domain.StudentProgramDomainService;
 import mk.finki.ukim.mk.exam_records.service.domain.UserDomainService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,15 +22,17 @@ public class UserDomainServiceImpl implements UserDomainService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRoleRepository userRoleRepository;
+    private final StudentProgramDomainService studentProgramDomainService;
 
-    public UserDomainServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, UserRoleRepository userRoleRepository) {
+    public UserDomainServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, UserRoleRepository userRoleRepository, StudentProgramDomainService studentProgramDomainService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRoleRepository = userRoleRepository;
+        this.studentProgramDomainService = studentProgramDomainService;
     }
 
     @Override
-    public User register(String email, String password, String repeatPassword, String name, String surname, Long index, String studentProgram) {
+    public User register(String email, String password, String repeatPassword, String name, String surname, Long index, Long studentProgramId) {
         if (email == null || email.isEmpty() || password == null || password.isEmpty())
             throw new InvalidEmailOrPasswordException("The email or password you entered is invalid");
         if (!password.equals(repeatPassword)) throw new PasswordsDoNotMatchException("The passwords do not match");
@@ -39,7 +43,8 @@ public class UserDomainServiceImpl implements UserDomainService {
         user.setPassword(passwordEncoder.encode(password));
         user.setName(name);
         user.setSurname(surname);
-        if(index != null || studentProgram != null || index != -1 || studentProgram != ""){
+        StudentProgram studentProgram = studentProgramDomainService.findById(studentProgramId).orElseThrow(()->new StudentProgramNotFoundException(studentProgramId));
+        if(index != null && studentProgramId != null){
             user.setRole(userRoleRepository.findByRole(Roles.STUDENT));
             user.setIndex(index);
             user.setStudentProgram(studentProgram);
