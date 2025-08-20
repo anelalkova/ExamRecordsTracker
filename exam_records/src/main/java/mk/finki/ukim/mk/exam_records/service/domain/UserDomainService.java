@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserDomainService extends UserDetailsService {
-    User register(String email, String password, String repeatPassword, String name, String surname, Long index, Long roleId);
-
     User login(String email, String password);
 
     User findByEmail(String email);
@@ -23,4 +21,6 @@ public interface UserDomainService extends UserDetailsService {
     Optional<User> getLoggedInUser();
 
     User update(User user);
+
+    User register(String email, String password, String repeatPassword, String name, String surname, Long index, Long studentProgramId, Long roleId);
 }

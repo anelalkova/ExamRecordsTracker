@@ -51,14 +51,13 @@ public class UserDomainServiceImpl implements UserDomainService {
         user.setPassword(passwordEncoder.encode(password));
         user.setName(name);
         user.setSurname(surname);
-        StudentProgram studentProgram = studentProgramDomainService.findById(studentProgramId).orElseThrow(()->new StudentProgramNotFoundException(studentProgramId));
-        if(index != null && studentProgramId != null){
-            user.setRole(userRoleRepository.findByRole(Roles.STUDENT));
         user.setRole(role);
-
+        if (studentProgramId != null) {
+            StudentProgram studentProgram = studentProgramDomainService.findById(studentProgramId).orElseThrow(() -> new StudentProgramNotFoundException(studentProgramId));
+            user.setStudentProgram(studentProgram);
+        }
         if (Roles.STUDENT.equals(role.getRole())) {
             user.setIndex(index);
-            user.setStudentProgram(studentProgram);
         }
         return userRepository.save(user);
     }
