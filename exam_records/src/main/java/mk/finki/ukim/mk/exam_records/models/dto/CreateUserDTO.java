@@ -10,7 +10,8 @@ public record CreateUserDTO(
         String name,
         String surname,
         Long index,
-        String studentProgram
+        String studentProgram,
+        Long roleId
 ) {
     public User toUser(UserRole role) {
         if (!password.equals(repeatPassword)) {

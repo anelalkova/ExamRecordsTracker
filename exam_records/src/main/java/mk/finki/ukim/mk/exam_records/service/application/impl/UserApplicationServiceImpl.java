@@ -21,6 +21,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     private final UserDomainService userDomainService;
     private final JwtHelper jwtHelper;
     private final UserRoleRepository userRoleRepository;
+
     public UserApplicationServiceImpl(UserDomainService userDomainService, JwtHelper jwtHelper, UserRoleRepository userRoleRepository) {
         this.userDomainService = userDomainService;
         this.jwtHelper = jwtHelper;
@@ -36,7 +37,8 @@ public class UserApplicationServiceImpl implements UserApplicationService {
                 createUserDto.name(),
                 createUserDto.surname(),
                 createUserDto.index(),
-                createUserDto.studentProgram()
+                createUserDto.studentProgram(),
+                createUserDto.roleId()
         );
         return Optional.of(DisplayUserDTO.from(user));
     }
@@ -64,10 +66,10 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     }
 
     @Override
-    public List<DisplayUserDTO> findAllByRole(Long roleId) {
-        UserRole userRole = userRoleRepository.findById(roleId).orElseThrow();
+    public List<DisplayUserDTO> findAllByRole(String role) {
+        UserRole userRole = userRoleRepository.findByRole(role).orElseThrow();
         if(userRole.getRole().isEmpty()){
-            throw new EntityNotFoundException("Role with id " + roleId + " not found");
+            throw new EntityNotFoundException("Role " + role + " not found");
         }
         return userDomainService.findAllByRole(userRole).stream().map(DisplayUserDTO::from).toList();
     }

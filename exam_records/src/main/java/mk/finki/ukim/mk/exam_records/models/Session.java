@@ -1,9 +1,11 @@
 package mk.finki.ukim.mk.exam_records.models;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "session", schema = "exam_records")
 public class Session {
