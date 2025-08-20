@@ -11,6 +11,7 @@ public record CreateUserDTO(
         String name,
         String surname,
         Long index,
+        Long roleId,
         Long studentProgramId
 ) {
     public User toUser(UserRole role, StudentProgram studentProgram) {

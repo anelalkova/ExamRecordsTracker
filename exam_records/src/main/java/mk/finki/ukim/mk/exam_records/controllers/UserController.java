@@ -50,8 +50,8 @@ public class UserController {
         return userApplicationService.findAll();
     }
 
-    @GetMapping("/find-by-role/{roleId}")
-    public List<DisplayUserDTO> findByRole(@PathVariable Long roleId) {
-        return userApplicationService.findAllByRole(roleId);
+    @GetMapping("/find-by-role/{role}")
+    public List<DisplayUserDTO> findByRole(@PathVariable String role) {
+        return userApplicationService.findAllByRole(role);
     }
 }

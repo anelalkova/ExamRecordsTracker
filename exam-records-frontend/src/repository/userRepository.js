@@ -7,6 +7,9 @@ const userRepository = {
     login: async (data) => {
         return await axiosInstance.post("/users/login", data);
     },
+    findByRole: async (role) => {
+        return await axiosInstance.get(`/users/find-by-role/${role}`, role)
+    }
 };
 
 export default userRepository;

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserDomainService extends UserDetailsService {
-    User register(String email, String password, String repeatPassword, String name, String surname, Long index, Long studentProgramId);
+    User register(String email, String password, String repeatPassword, String name, String surname, Long index, Long roleId);
 
     User login(String email, String password);
 
@@ -19,4 +19,8 @@ public interface UserDomainService extends UserDetailsService {
     List<User> findAllByRole(UserRole role);
 
     Optional<User> findById(Long id);
+
+    Optional<User> getLoggedInUser();
+
+    User update(User user);
 }

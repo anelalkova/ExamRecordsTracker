@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import mk.finki.ukim.mk.exam_records.constants.JwtConstants;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -64,7 +65,7 @@ public class JwtHelper {
         Map<String, Object> extraClaims = new HashMap<>();
         List<String> roles = userDetails.getAuthorities()
                 .stream()
-                .map(authority -> authority.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .toList();
         extraClaims.put("roles", roles);
         return buildToken(extraClaims, userDetails.getUsername(), JwtConstants.EXPIRATION_TIME);

@@ -53,15 +53,13 @@ public class JwtSecurityWebConfig {
                                         "/v3/api-docs/**",
                                         "/api/users/register",
                                         "/api/users/login",
-                                        "/api/roles/**"
-                                )
+                                        "/api/roles/**",
+                                        "/api/users/**"
+                                        )
                                 .permitAll()
-                                .requestMatchers(
-                                        "/api/users/**",
-                                        "/api/subjects/**",
-                                        "/api/exams/**"
-                                )
-                                .hasAnyRole("TEACHER")
+                            /*    .requestMatchers("/api/subjects/**").hasAuthority("ROLE_ADMIN")
+                                .requestMatchers("/api/exams/**").hasAuthority("ROLE_TEACHER")*/
+                                .anyRequest().permitAll()
                 )
                 .sessionManagement(sessionManagementConfigurer ->
                         sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -70,5 +68,4 @@ public class JwtSecurityWebConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 }

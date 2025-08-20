@@ -5,8 +5,11 @@ import mk.finki.ukim.mk.exam_records.models.dto.CreateSubjectDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.DisplaySubjectDTO;
 import mk.finki.ukim.mk.exam_records.service.application.SubjectApplicationService;
 import mk.finki.ukim.mk.exam_records.service.domain.SubjectDomainService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -43,5 +46,28 @@ public class SubjectApplicationServiceImpl implements SubjectApplicationService 
                 createSubjectDto.semester(),
                 createSubjectDto.staffIds()
         );
-        return Optional.of(DisplaySubjectDTO.from(subject));    }
+        return Optional.of(DisplaySubjectDTO.from(subject));
+    }
+
+    @Override
+    public List<DisplaySubjectDTO> findAll() {
+        return subjectDomainService.findAll().stream().map(DisplaySubjectDTO::from).toList();
+    }
+
+    @Override
+    public Page<DisplaySubjectDTO> findAll(Pageable pageable) {
+        return subjectDomainService.findAll(pageable)
+                .map(DisplaySubjectDTO::from);
+    }
+
+    @Override
+    public Optional<DisplaySubjectDTO> enroll(Long studentId, Long subjectId) {
+        return Optional.of(DisplaySubjectDTO.from(subjectDomainService.enroll(studentId, subjectId)));
+    }
+
+    @Override
+    public Page<DisplaySubjectDTO> findAllForStudent(String userEmail, Pageable pageable) {
+        return subjectDomainService.findAllForStudent(userEmail, pageable)
+                .map(DisplaySubjectDTO::from);
+    }
 }
