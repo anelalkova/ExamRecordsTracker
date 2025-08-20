@@ -4,6 +4,10 @@ import Login from "./ui/components/auth/Login/Login.jsx";
 import {BrowserRouter, Routes, Route} from "react-router-dom";
 import Layout from "./ui/components/layout/Layout/Layout.jsx";
 import HomePage from "./ui/pages/HomePage/HomePage.jsx";
+import SubjectsPage from "./ui/pages/SubjectsPage/SubjectsPage.jsx";
+import ProtectedRoute from "./ui/components/routing/ProtectedRoute/ProtectedRoute.jsx";
+import CreateSubjectPage from "./ui/pages/SubjectsPage/CreateSubjectPage.jsx";
+import ExamsPage from "./ui/pages/ExamsPage/ExamsPage.jsx";
 
 const App = () => {
     return (
@@ -13,11 +17,11 @@ const App = () => {
                 <Route path="/login" element={<Login/>}/>
                 <Route path="/" element={<Layout/>}>
                     <Route index element={<HomePage/>}/>
-                  {/*  <Route element={<ProtectedRoute/>}>
-                        <Route path="products" element={<ProductsPage/>}/>
-                        <Route path="products/:id" element={<ProductDetails/>}/>
-                        <Route path="shopping-cart" element={<ShoppingCart/>}/>
-                    </Route>*/}
+                    <Route element={<ProtectedRoute roles={["ROLE_ADMIN", "ROLE_STUDENT"]}/>}>
+                        <Route path="subjects" element={<SubjectsPage/>}/>
+                        <Route path="/subjects/:subjectCode/exams" element={<ExamsPage/>}/>
+                    </Route>
+                    <Route path="/subjects/create" element={<CreateSubjectPage/>}/>
                 </Route>
 
             </Routes>

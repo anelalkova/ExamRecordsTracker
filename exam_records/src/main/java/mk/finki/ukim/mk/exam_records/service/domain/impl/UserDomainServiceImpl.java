@@ -7,6 +7,7 @@ import mk.finki.ukim.mk.exam_records.models.exceptions.*;
 import mk.finki.ukim.mk.exam_records.repository.UserRepository;
 import mk.finki.ukim.mk.exam_records.repository.UserRoleRepository;
 import mk.finki.ukim.mk.exam_records.service.domain.UserDomainService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,23 +29,32 @@ public class UserDomainServiceImpl implements UserDomainService {
     }
 
     @Override
-    public User register(String email, String password, String repeatPassword, String name, String surname, Long index, String studentProgram) {
+    public User register(String email, String password, String repeatPassword,
+                         String name, String surname, Long index, String studentProgram,
+                         Long roleId) {
+
         if (email == null || email.isEmpty() || password == null || password.isEmpty())
             throw new InvalidEmailOrPasswordException("The email or password you entered is invalid");
-        if (!password.equals(repeatPassword)) throw new PasswordsDoNotMatchException("The passwords do not match");
+
+        if (!password.equals(repeatPassword))
+            throw new PasswordsDoNotMatchException("The passwords do not match");
+
         if (userRepository.findByEmail(email).isPresent())
             throw new EmailAlreadyExistsException(email);
+
+        UserRole role = userRoleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Role not found: " + roleId));
+
         User user = new User();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setName(name);
         user.setSurname(surname);
-        if(index != null || studentProgram != null || index != -1 || studentProgram != ""){
-            user.setRole(userRoleRepository.findByRole(Roles.STUDENT));
+        user.setRole(role);
+
+        if (Roles.STUDENT.equals(role.getRole())) {
             user.setIndex(index);
             user.setStudentProgram(studentProgram);
-        }else{
-            user.setRole(userRoleRepository.findByRole(Roles.TEACHER));
         }
         return userRepository.save(user);
     }
@@ -81,6 +91,15 @@ public class UserDomainServiceImpl implements UserDomainService {
     }
 
     @Override
+    public Optional<User> getLoggedInUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            return Optional.of((User) principal);
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = this.findByEmail(username);
 
@@ -95,4 +114,23 @@ public class UserDomainServiceImpl implements UserDomainService {
                 .build();
     }
 
+    @Override
+    public User update(User user) {
+        if (user == null || user.getId() == null) {
+            throw new IllegalArgumentException("Cannot update null or transient user");
+        }
+
+        User existingUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("User not found: " + user.getId()));
+
+        existingUser.setName(user.getName());
+        existingUser.setSurname(user.getSurname());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setPassword(user.getPassword());
+        existingUser.setRole(user.getRole());
+        existingUser.setIndex(user.getIndex());
+        existingUser.setStudentProgram(user.getStudentProgram());
+
+        return userRepository.save(existingUser);
+    }
 }
