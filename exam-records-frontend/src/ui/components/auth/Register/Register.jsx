@@ -1,28 +1,40 @@
-import {useState} from 'react';
+import { useState } from "react";
 import {
-    Box, TextField, Button, Typography, Container, Paper, InputLabel, Select, MenuItem, FormControl
-} from '@mui/material';
+    Box,
+    TextField,
+    Button,
+    Typography,
+    Container,
+    Paper,
+    InputLabel,
+    Select,
+    MenuItem,
+    FormControl
+} from "@mui/material";
 import userRepository from "../../../../repository/userRepository.js";
-import {useNavigate} from "react-router";
+import { useNavigate } from "react-router";
+import useStudentPrograms from "../../../../hooks/useStudentPrograms.js";
 
 const initialFormData = {
-    "name": "",
-    "surname": "",
-    "email": "",
-    "password": "",
-    "repeatPassword": "",
-    "index": "",
-    "studentProgram": "",
+    name: "",
+    surname: "",
+    email: "",
+    password: "",
+    repeatPassword: "",
+    index: "",
+    roleId: 1,
+    studentProgramId: ""
 };
 
 const Register = () => {
     const navigate = useNavigate();
-
     const [formData, setFormData] = useState(initialFormData);
 
+    const { programs, loading, error } = useStudentPrograms();
+
     const handleChange = (event) => {
-        const {name, value} = event.target;
-        setFormData({...formData, [name]: value});
+        const { name, value } = event.target;
+        setFormData({ ...formData, [name]: value });
     };
 
     const handleSubmit = () => {
@@ -38,11 +50,14 @@ const Register = () => {
 
     return (
         <Container maxWidth="sm">
-            <Paper elevation={3} sx={{padding: 4, mt: 4}}>
-                <Typography variant="h5" align="center" gutterBottom>Register</Typography>
+            <Paper elevation={3} sx={{ padding: 4, mt: 4 }}>
+                <Typography variant="h5" align="center" gutterBottom>
+                    Register
+                </Typography>
                 <Box>
                     <TextField
-                        fullWidth label="Name"
+                        fullWidth
+                        label="Name"
                         name="name"
                         margin="normal"
                         required
@@ -50,7 +65,8 @@ const Register = () => {
                         onChange={handleChange}
                     />
                     <TextField
-                        fullWidth label="Surname"
+                        fullWidth
+                        label="Surname"
                         name="surname"
                         margin="normal"
                         required
@@ -58,7 +74,8 @@ const Register = () => {
                         onChange={handleChange}
                     />
                     <TextField
-                        fullWidth label="Email"
+                        fullWidth
+                        label="Email"
                         name="email"
                         margin="normal"
                         required
@@ -66,7 +83,8 @@ const Register = () => {
                         onChange={handleChange}
                     />
                     <TextField
-                        fullWidth label="Password"
+                        fullWidth
+                        label="Password"
                         name="password"
                         type="password"
                         margin="normal"
@@ -75,7 +93,8 @@ const Register = () => {
                         onChange={handleChange}
                     />
                     <TextField
-                        fullWidth label="Repeat Password"
+                        fullWidth
+                        label="Repeat Password"
                         name="repeatPassword"
                         type="password"
                         margin="normal"
@@ -84,7 +103,8 @@ const Register = () => {
                         onChange={handleChange}
                     />
                     <TextField
-                        fullWidth label="Index"
+                        fullWidth
+                        label="Index"
                         name="index"
                         type="text"
                         margin="normal"
@@ -92,16 +112,49 @@ const Register = () => {
                         value={formData.index}
                         onChange={handleChange}
                     />
+
                     <TextField
-                        fullWidth label="Student Program"
-                        name="studentProgram"
-                        type="text"
+                        select
+                        fullWidth
                         margin="normal"
-                        required
-                        value={formData.studentProgram}
+                        label="Role"
+                        name="roleId"
+                        value={formData.roleId || ""}
                         onChange={handleChange}
-                    />
-                    <Button fullWidth variant="contained" type="submit" sx={{mt: 2}} onClick={handleSubmit}>
+                    >
+                        <MenuItem value="" disabled>
+                            Select a role
+                        </MenuItem>
+                        <MenuItem value={1}>Student</MenuItem>
+                        <MenuItem value={2}>Teacher</MenuItem>
+                        <MenuItem value={3}>Admin</MenuItem>
+                    </TextField>
+
+                    <TextField
+                        select
+                        fullWidth
+                        margin="normal"
+                        label="Student Program"
+                        name="studentProgramId"
+                        value={formData.studentProgramId || ""}
+                        onChange={handleChange}
+                    >
+                        <MenuItem value="" disabled>
+                            Select a program
+                        </MenuItem>
+                        {programs.map((program) => (
+                            <MenuItem key={program.id} value={program.id}>
+                                {program.name}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        type="submit"
+                        sx={{ mt: 2 }}
+                        onClick={handleSubmit}
+                    >
                         Register
                     </Button>
                 </Box>

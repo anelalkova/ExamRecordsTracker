@@ -65,16 +65,18 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.getRole()));
     }
-
     @Override
     public String getUsername() {
         return email;
     }
 
+    @Override
+    public String getPassword() {
+        return password;
+    }
     public boolean isStudent() {
         return role.getRole().equals(Roles.STUDENT);
     }
-
     public boolean isTeacher() {
         return role.getRole().equals(Roles.TEACHER);
     }
