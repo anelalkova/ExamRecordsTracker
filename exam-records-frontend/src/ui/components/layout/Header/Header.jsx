@@ -9,6 +9,9 @@ import useAuth from "../../../../hooks/useAuth.js";
 const pages = [
     {path: "/", name: "home"},
     {path: "/subjects", name: "subjects", roles: ["ROLE_ADMIN", "ROLE_STUDENT"]},
+    {path: "/rooms", name: "rooms", roles: ["ROLE_ADMIN"]},
+    {path: "/users", name: "users", roles: ["ROLE_ADMIN"]},
+    {path: "/admin/register-students", name: "register students", roles: ["ROLE_ADMIN"]},
 ];
 
 const Header = () => {
@@ -17,7 +20,6 @@ const Header = () => {
         if (!page.roles) return true;
         if (!user) return false;
 
-        console.log(user)
         return page.roles.some((r) => user.roles.includes(r));
     };
 

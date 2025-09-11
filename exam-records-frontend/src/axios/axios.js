@@ -17,7 +17,6 @@ axiosInstance.interceptors.request.use(
     },
     (error) => {
         if (error.response.status === 401 || error.response.status === 403) {
-            console.log("Invalid token");
             localStorage.removeItem("token");
             window.location.href = "/login";
         }

@@ -13,33 +13,45 @@ const useSubjects = () => {
         subjectRepository
             .findAll()
             .then((response) => {
-                console.log("Subjects API response:", response.data);
                 setState({
                     "subjects": response.data,
                     "loading": false
                 });
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                setState({
+                    "subjects": [],
+                    "loading": false
+                });
+            });
     }, []);
 
     const onAdd = useCallback((data) => {
         subjectRepository
             .add(data)
             .then(() => {
-                console.log("Successfully added a new product.");
                 fetchSubjects();
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                setState({
+                    "subjects": [],
+                    "loading": false
+                });
+            });
     }, [fetchSubjects]);
 
     const onEdit = useCallback((id, data) => {
         subjectRepository
             .edit(id, data)
             .then(() => {
-                console.log(`Successfully edited the subject with ID ${id}.`);
                 fetchSubjects();
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                setState({
+                    "subjects": [],
+                    "loading": false
+                });
+            });
     }, [fetchSubjects]);
 
     useEffect(() => {

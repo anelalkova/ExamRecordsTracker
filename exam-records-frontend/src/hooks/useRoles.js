@@ -8,10 +8,11 @@ const useRoles = () => {
         roleRepository
             .findAll()
             .then((response) => {
-                console.log("Roles API response:", response.data);
                 setRoles(response.data);
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                setRoles([]);
+            });
     }, []);
 
     return roles;

@@ -41,11 +41,12 @@ const Register = () => {
         userRepository
             .register(formData)
             .then(() => {
-                console.log("The user is successfully registered.");
                 setFormData(initialFormData);
                 navigate("/login");
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                
+            });
     };
 
     return (

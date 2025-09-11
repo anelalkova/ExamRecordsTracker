@@ -13,13 +13,17 @@ const useUsers = () => {
         userRepository
             .findByRole(role)
             .then((response) => {
-                console.log("Users API response:", response.data);
                 setState({
                     "users": response.data,
                     "loading": false
                 });
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                setState({
+                    "users": [],
+                    "loading": false
+                });
+            });
     }, []);
 
     return {...state, fetchUsersWithRole};

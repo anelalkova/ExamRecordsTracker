@@ -10,7 +10,6 @@ const useStudentPrograms = () => {
         studentProgramsRepository
             .findAll()
             .then((response) => {
-                console.log("Student Programs: ", response.data);
                 setPrograms(response.data);
             })
             .catch((err) => {
