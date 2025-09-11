@@ -68,7 +68,10 @@ public class UserDomainServiceImpl implements UserDomainService {
             throw new InvalidArgumentsException();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
-        if (!passwordEncoder.matches(password, user.getPassword()))
+        
+        boolean matches = passwordEncoder.matches(password, user.getPassword());
+        
+        if (!matches)
             throw new InvalidUserCredentialsException();
         return user;
     }

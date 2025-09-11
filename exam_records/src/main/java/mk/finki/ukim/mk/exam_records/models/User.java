@@ -44,6 +44,15 @@ public class User implements UserDetails {
     @ManyToOne(optional = false)
     private StudentProgram studentProgram;
 
+    @Column(name = "is_first_login")
+    private Boolean isFirstLogin = true;
+
+    @Column(name = "password_reset_token")
+    private String passwordResetToken;
+
+    @Column(name = "password_reset_token_expiry")
+    private java.time.LocalDateTime passwordResetTokenExpiry;
+
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StudentExam> exams = new HashSet<>();
 
@@ -59,6 +68,16 @@ public class User implements UserDetails {
         this.role = role;
         this.index = index;
         this.studentProgram = studentProgram;
+        this.isFirstLogin = true;
+    }
+    
+    public User(String name, String surname, String email, String password, UserRole role) {
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.isFirstLogin = false; 
     }
 
     @Override
@@ -79,5 +98,33 @@ public class User implements UserDetails {
     }
     public boolean isTeacher() {
         return role.getRole().equals(Roles.TEACHER);
+    }
+    
+    public boolean isAdmin() {
+        return role.getRole().equals(Roles.ADMIN);
+    }
+    
+    public void markFirstLoginComplete() {
+        this.isFirstLogin = false;
+    }
+    
+    public boolean requiresPasswordChange() {
+        return Boolean.TRUE.equals(this.isFirstLogin);
+    }
+    
+    public void setPasswordResetToken(String token, java.time.LocalDateTime expiry) {
+        this.passwordResetToken = token;
+        this.passwordResetTokenExpiry = expiry;
+    }
+    
+    public void clearPasswordResetToken() {
+        this.passwordResetToken = null;
+        this.passwordResetTokenExpiry = null;
+    }
+    
+    public boolean isPasswordResetTokenValid() {
+        return passwordResetToken != null && 
+               passwordResetTokenExpiry != null && 
+               passwordResetTokenExpiry.isAfter(java.time.LocalDateTime.now());
     }
 }

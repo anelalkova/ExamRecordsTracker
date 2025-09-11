@@ -52,7 +52,12 @@ public class UserApplicationServiceImpl implements UserApplicationService {
 
         String token = jwtHelper.generateToken(user);
 
-        return Optional.of(new LoginResponseDTO(token));
+        return Optional.of(new LoginResponseDTO(
+                token,
+                user.requiresPasswordChange(),
+                user.getRole().getRole(),
+                user.getEmail()
+        ));
     }
 
     @Override
@@ -72,5 +77,18 @@ public class UserApplicationServiceImpl implements UserApplicationService {
             throw new EntityNotFoundException("Role " + role + " not found");
         }
         return userDomainService.findAllByRole(userRole).stream().map(DisplayUserDTO::from).toList();
+    }
+
+    @Override
+    public DisplayUserDTO updateUserRole(Long userId, Long roleId) {
+        User user = userDomainService.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        UserRole newRole = userRoleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        
+        user.setRole(newRole);
+        User updatedUser = userDomainService.update(user);
+        return DisplayUserDTO.from(updatedUser);
     }
 }

@@ -20,6 +20,7 @@ public class Exam {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "subject_code")
     private Subject subject;
 
     @ManyToOne

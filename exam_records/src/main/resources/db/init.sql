@@ -1,36 +1,32 @@
 create schema if not exists exam_records;
 
-create table if not exists exam_records.subject
-(
-    code        int primary key,
-    name        varchar(255) not null,
-    semester    varchar(255) not null,
-    year        int          not null
-);
-
 create table if not exists exam_records.userrole
 (
-    id bigserial primary key,
+    id   serial primary key,
     role varchar(255) not null unique
 );
 
-insert into exam_records.userrole(role)
-values ('ROLE_STUDENT'),
-       ('ROLE_TEACHER'),
-       ('ROLE_ADMIN')
-on conflict (role) do nothing;
+create table if not exists exam_records.student_program
+(
+    id   serial primary key,
+    name varchar(255) not null unique,
+    year int not null
+);
 
 create table if not exists exam_records.users
 (
-    id              bigserial primary key,
-    name            varchar(255) not null,
-    surname         varchar(255) not null,
-    email           varchar(255) not null unique,
-    password        varchar(255) not null,
-    role_id         bigint          not null,
-    student_index   int,
-    student_program varchar(255),
-    foreign key (role_id) references exam_records.userrole (id) on delete cascade
+    id                 serial primary key,
+    email              varchar(255) not null unique,
+    index              varchar(255),
+    name               varchar(255) not null,
+    password           varchar(255) not null,
+    surname            varchar(255) not null,
+    role_id            int          not null references exam_records.userrole (id),
+    student_program_id int          not null references exam_records.student_program (id),
+    enabled            boolean default false,
+    reset_token        varchar(255),
+    reset_token_expiry timestamp,
+    unique (email)
 );
 
 create table if not exists exam_records.session
@@ -39,97 +35,118 @@ create table if not exists exam_records.session
     name varchar(255) not null unique
 );
 
-insert into exam_records.session(name)
-values ('first_midterm'),
-       ('second_midterm'),
-       ('january'),
-       ('june'),
-       ('september')
-on conflict (name) do nothing;
+create table if not exists exam_records.subject
+(
+    code     bigint primary key,
+    name     varchar(255) not null,
+    year     int,
+    semester varchar(50)
+);
 
 create table if not exists exam_records.exam
 (
-    id           bigserial primary key,
-    subject_code bigint not null,
-    session_id   bigint not null,
+    id           serial primary key,
+    subject_code bigint not null references exam_records.subject (code),
+    session_id   int not null references exam_records.session (id),
     date         date not null,
     start_time   time not null,
-    end_time     time not null,
-    foreign key (subject_code) references exam_records.subject (code) on delete cascade,
-    foreign key (session_id) references exam_records.session (id) on delete cascade
+    end_time     time not null
 );
 
 create table if not exists exam_records.subject_staff
 (
-    subject_code bigint not null,
-    user_id bigint not null,
-    primary key (subject_code, user_id),
-    foreign key (subject_code) references exam_records.subject (code) on delete cascade,
-    foreign key (user_id) references exam_records.users (id) on delete cascade
+    id           serial primary key,
+    subject_code bigint not null references exam_records.subject (code),
+    user_id      int not null references exam_records.users (id)
 );
 
 create table if not exists exam_records.room
 (
-    id       bigserial primary key,
-    name     varchar(255) not null unique,
-    capacity int          not null
+    id   serial primary key,
+    name varchar(255) not null
 );
 
 create table if not exists exam_records.exam_room_reservation
 (
-    exam_id bigint not null,
-    room_id bigint not null,
-    primary key (exam_id, room_id),
-    foreign key (exam_id) references exam_records.exam (id) on delete cascade,
-    foreign key (room_id) references exam_records.room (id) on delete cascade
+    id       serial primary key,
+    exam_id  int not null references exam_records.exam (id),
+    room_id  int not null references exam_records.room (id),
+    capacity int not null
 );
 
 create table if not exists exam_records.student_exam
 (
-    id bigserial primary key,
-    student_id bigint not null,
-    exam_id bigint not null,
-    showed boolean default false,
-    constraint fk_student foreign key (student_id) references exam_records.users (id) on delete cascade,
-    constraint fk_exam foreign key (exam_id) references exam_records.exam (id) on delete cascade,
-    constraint uq_student_exam unique (student_id, exam_id)
+    id       serial primary key,
+    exam_id  int not null references exam_records.exam (id),
+    user_id  int not null references exam_records.users (id)
 );
 
 create table if not exists exam_records.student_subject
 (
-    student_id bigint not null,
-    subject_code bigint not null,
-    primary key (student_id, subject_code),
-    foreign key (student_id) references exam_records.users (id) on delete cascade,
-    foreign key (subject_code) references exam_records.subject (code) on delete cascade
+    id           serial primary key,
+    subject_code bigint not null references exam_records.subject (code),
+    student_id   int not null references exam_records.users (id)
 );
 
-create table if not exists exam_records.student_program
-(
-    id   serial primary key,
-    name varchar(255) not null,
-    year int          not null
-);
+insert into exam_records.userrole(role)
+select 'ROLE_STUDENT'
+where not exists (select 1 from exam_records.userrole where role = 'ROLE_STUDENT');
 
-ALTER TABLE IF EXISTS exam_records.users
-    ADD COLUMN IF NOT EXISTS student_program_id int;
+insert into exam_records.userrole(role)
+select 'ROLE_TEACHER'
+where not exists (select 1 from exam_records.userrole where role = 'ROLE_TEACHER');
 
-ALTER TABLE IF EXISTS exam_records.users
-    DROP COLUMN IF EXISTS student_program;
+insert into exam_records.userrole(role)
+select 'ROLE_ADMIN'
+where not exists (select 1 from exam_records.userrole where role = 'ROLE_ADMIN');
 
-DO
-$$
-    BEGIN
-        IF NOT EXISTS (SELECT 1
-                       FROM information_schema.table_constraints
-                       WHERE constraint_schema = 'exam_records'
-                         AND table_name = 'users'
-                         AND constraint_name = 'fk_student_program') THEN
-            ALTER TABLE exam_records.users
-                ADD CONSTRAINT fk_student_program
-                    FOREIGN KEY (student_program_id)
-                        REFERENCES exam_records.student_program (id)
-                        ON DELETE CASCADE;
-        END IF;
-    END
-$$;
+insert into exam_records.session(name)
+select 'first_midterm'
+where not exists (select 1 from exam_records.session where name = 'first_midterm');
+
+insert into exam_records.session(name)
+select 'second_midterm'
+where not exists (select 1 from exam_records.session where name = 'second_midterm');
+
+insert into exam_records.session(name)
+select 'january'
+where not exists (select 1 from exam_records.session where name = 'january');
+
+insert into exam_records.session(name)
+select 'june'
+where not exists (select 1 from exam_records.session where name = 'june');
+
+insert into exam_records.session(name)
+select 'september'
+where not exists (select 1 from exam_records.session where name = 'september');
+
+-- Clear existing student programs to avoid conflicts
+DELETE FROM exam_records.student_program;
+
+-- Reset the sequence
+ALTER SEQUENCE exam_records.student_program_id_seq RESTART WITH 1;
+
+-- Insert new data
+insert into exam_records.student_program(name, year) values ('KNI', 2018);
+insert into exam_records.student_program(name, year) values ('IKI', 2018);
+insert into exam_records.student_program(name, year) values ('PET', 2018);
+insert into exam_records.student_program(name, year) values ('ADMIN_PROGRAM', 0);
+
+DO $$
+DECLARE
+    admin_role_id INT;
+    admin_program_id INT;
+BEGIN
+    SELECT id INTO admin_role_id FROM exam_records.userrole WHERE role = 'ROLE_ADMIN';
+    SELECT id INTO admin_program_id FROM exam_records.student_program WHERE name = 'ADMIN_PROGRAM';
+    
+    INSERT INTO exam_records.users(email, index, name, password, surname, role_id, student_program_id, enabled)
+    VALUES ('admin@examrecords.com', null, 'Admin',
+            '$2a$10$UD1kOJqVWg0HBxDuUuPd1udW6Tu59oZBusI2idtnilj9E6dDwgFOW',
+            'User', admin_role_id, admin_program_id, true);
+EXCEPTION WHEN unique_violation THEN
+    UPDATE exam_records.users SET 
+        password = '$2a$10$UD1kOJqVWg0HBxDuUuPd1udW6Tu59oZBusI2idtnilj9E6dDwgFOW',
+        enabled = true
+    WHERE email = 'admin@examrecords.com';
+END $$;

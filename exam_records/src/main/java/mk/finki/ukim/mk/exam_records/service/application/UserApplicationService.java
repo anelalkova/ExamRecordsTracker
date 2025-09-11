@@ -18,4 +18,6 @@ public interface UserApplicationService {
     List<DisplayUserDTO> findAll();
 
     List<DisplayUserDTO> findAllByRole(String role);
+
+    DisplayUserDTO updateUserRole(Long userId, Long roleId);
 }

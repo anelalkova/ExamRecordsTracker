@@ -23,16 +23,6 @@ public class UserController {
         this.userApplicationService = userApplicationService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<DisplayUserDTO> register(@RequestBody CreateUserDTO createUserDto) {
-        try {
-            return userApplicationService.register(createUserDto)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
-        } catch (InvalidArgumentsException | PasswordsDoNotMatchException exception) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginUserDTO loginUserDto) {
@@ -53,5 +43,15 @@ public class UserController {
     @GetMapping("/find-by-role/{role}")
     public List<DisplayUserDTO> findByRole(@PathVariable String role) {
         return userApplicationService.findAllByRole(role);
+    }
+
+    @PutMapping("/{id}/role")
+    public ResponseEntity<DisplayUserDTO> updateUserRole(@PathVariable Long id, @RequestParam Long roleId) {
+        try {
+            DisplayUserDTO updatedUser = userApplicationService.updateUserRole(id, roleId);
+            return ResponseEntity.ok(updatedUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
