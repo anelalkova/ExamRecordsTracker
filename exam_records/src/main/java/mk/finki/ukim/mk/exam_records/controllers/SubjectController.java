@@ -39,9 +39,14 @@ public class SubjectController {
         }
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<DisplaySubjectDTO> update(@RequestBody CreateSubjectDTO createSubjectDTO) {
+    @PostMapping("/update/{code}")
+    public ResponseEntity<DisplaySubjectDTO> update(
+            @PathVariable Long code,
+            @RequestBody CreateSubjectDTO createSubjectDTO) {
         try {
+            if (!code.equals(createSubjectDTO.code())) {
+                throw new InvalidArgumentsException("Code mismatch");
+            }
             return subjectApplicationService.update(createSubjectDTO)
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());

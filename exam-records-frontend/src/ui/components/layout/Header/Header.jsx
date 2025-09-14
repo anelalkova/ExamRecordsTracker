@@ -37,10 +37,14 @@ const Header = () => {
                         {pages.filter(canAccess).map((page) => (
                             <Link key={page.name} to={page.path} style={{textDecoration: "none"}}>
                                 <Button sx={{my: 2, color: "white", display: "block"}}>
-                                    {page.name}
+                                    {page.name
+                                        .split(" ")
+                                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                        .join(" ")}
                                 </Button>
                             </Link>
                         ))}
+
                     </Box>
                     <AuthenticationToggle/>
                 </Toolbar>

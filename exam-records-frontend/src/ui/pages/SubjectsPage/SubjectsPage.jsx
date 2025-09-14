@@ -14,9 +14,10 @@ import {
     Alert,
     Menu,
     MenuItem,
-    IconButton
+    IconButton,
+    Chip
 } from "@mui/material";
-import { MoreVert as MoreVertIcon, FileDownload, FileUpload } from "@mui/icons-material";
+import { MoreVert as MoreVertIcon, FileDownload, FileUpload, Edit, School } from "@mui/icons-material";
 import useAuth from "../../../hooks/useAuth.js";
 import useSubjectsPaged from "../../../hooks/useSubjectsPaged.js";
 import {useNavigate} from "react-router-dom";
@@ -55,7 +56,7 @@ const SubjectsPage = () => {
             const response = await axiosInstance.get(`/csv/subjects/${subjectCode}/students/export`, {
                 responseType: 'blob'
             });
-            
+
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
@@ -64,7 +65,7 @@ const SubjectsPage = () => {
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
-            
+
             setMessage('Students exported successfully!');
             setMessageType('success');
         } catch (error) {
@@ -78,11 +79,11 @@ const SubjectsPage = () => {
         try {
             const formData = new FormData();
             formData.append('file', file);
-            
+
             await axiosInstance.post(`/csv/subjects/${subjectCode}/students/import`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-            
+
             setMessage('Students imported successfully!');
             setMessageType('success');
         } catch (error) {
@@ -134,51 +135,126 @@ const SubjectsPage = () => {
                             <TableCell>Name</TableCell>
                             <TableCell>Year</TableCell>
                             <TableCell>Semester</TableCell>
-                            <TableCell>Staff</TableCell>
-                            <TableCell align="center">Actions</TableCell>
+                            <TableCell>Assigned Staff</TableCell>
+                            <TableCell>Students</TableCell>
+                            <TableCell align="center">Management</TableCell>
                         </TableRow>
                     </TableHead>
+
                     <TableBody>
                         {subjectsPage.content.length > 0 ? (
                             subjectsPage.content.map((subject) => (
-                                <TableRow
-                                    key={subject.code}
-                                    hover
-                                    sx={{cursor: "pointer"}}
-                                    onClick={() => navigate(`/subjects/${subject.code}/exams`)}
-                                >
-                                    <TableCell>{subject.code}</TableCell>
-                                    <TableCell>{subject.name}</TableCell>
-                                    <TableCell>{subject.year}</TableCell>
-                                    <TableCell>{subject.semester}</TableCell>
+                                <TableRow key={subject.code} hover>
                                     <TableCell>
-                                        {subject.subjectStaff.length > 0
-                                            ? subject.subjectStaff.map((staff) => (
-                                                <div key={staff.email}>
-                                                    {staff.name} {staff.surname}
-                                                </div>
-                                            ))
-                                            : <em>No staff assigned</em>}
+                                        <Chip
+                                            label={subject.code}
+                                            color="primary"
+                                            variant="outlined"
+                                            size="small"
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="subtitle2" fontWeight="medium">
+                                            {subject.name}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>{subject.year}</TableCell>
+                                    <TableCell>
+                                        <Chip
+                                            label={subject.semester}
+                                            color={subject.semester === 'Spring' ? 'success' : 'info'}
+                                            size="small"
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        {subject.subjectStaff && subject.subjectStaff.length > 0 ? (
+                                            <Box>
+                                                {subject.subjectStaff.map((staff, index) => (
+                                                    <Typography key={staff.email} variant="body2">
+                                                        {staff.name} {staff.surname}
+                                                        {index < subject.subjectStaff.length - 1 && ','}
+                                                    </Typography>
+                                                ))}
+                                            </Box>
+                                        ) : (
+                                            <Typography variant="body2" color="text.secondary" fontStyle="italic">
+                                                No staff assigned
+                                            </Typography>
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
+                                        {subject.subjectStudents ? (
+                                            <Chip
+                                                label={`${subject.subjectStudents.length} enrolled`}
+                                                color="secondary"
+                                                size="small"
+                                            />
+                                        ) : (
+                                            <Chip
+                                                label="0 enrolled"
+                                                color="default"
+                                                size="small"
+                                            />
+                                        )}
                                     </TableCell>
                                     <TableCell align="center">
-                                        {canEdit && (
-                                            <IconButton
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleMenuOpen(e, subject);
-                                                }}
+                                        <Box display="flex" gap={1} justifyContent="center" alignItems="center">
+                                            {/* Primary Action - Navigate to Exams */}
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
                                                 size="small"
+                                                startIcon={<School />}
+                                                onClick={() => navigate(`/subjects/${subject.code}/exams`)}
+                                                sx={{ minWidth: 'auto' }}
                                             >
-                                                <MoreVertIcon />
-                                            </IconButton>
-                                        )}
+                                                Exams
+                                            </Button>
+
+                                            {/* Secondary Action - Edit (only for admins) */}
+                                            {canEdit && (
+                                                <Button
+                                                    variant="outlined"
+                                                    color="warning"
+                                                    size="small"
+                                                    startIcon={<Edit />}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        navigate(`/subjects/${subject.code}/edit`);
+                                                    }}
+                                                    sx={{ minWidth: 'auto' }}
+                                                >
+                                                    Edit
+                                                </Button>
+                                            )}
+
+                                            {/* Additional Actions Menu (only for admins) */}
+                                            {canEdit && (
+                                                <IconButton
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleMenuOpen(e, subject);
+                                                    }}
+                                                    size="small"
+                                                    sx={{
+                                                        border: '1px solid',
+                                                        borderColor: 'divider',
+                                                        '&:hover': { backgroundColor: 'action.hover' }
+                                                    }}
+                                                >
+                                                    <MoreVertIcon />
+                                                </IconButton>
+                                            )}
+                                        </Box>
                                     </TableCell>
                                 </TableRow>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={6} align="center">
-                                    No subjects found.
+                                <TableCell colSpan={7} align="center">
+                                    <Typography variant="body1" color="text.secondary">
+                                        No subjects found.
+                                    </Typography>
                                 </TableCell>
                             </TableRow>
                         )}
@@ -199,10 +275,22 @@ const SubjectsPage = () => {
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
+                PaperProps={{
+                    elevation: 3,
+                    sx: {
+                        mt: 1.5,
+                        minWidth: 180,
+                    }
+                }}
             >
                 <MenuItem onClick={() => handleExportStudents(selectedSubject?.code)}>
-                    <FileDownload sx={{ mr: 1 }} />
-                    Export Students
+                    <FileDownload sx={{ mr: 2, color: 'primary.main' }} />
+                    <Box>
+                        <Typography variant="subtitle2">Export Students</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                            Download CSV file
+                        </Typography>
+                    </Box>
                 </MenuItem>
                 <MenuItem>
                     <input
@@ -212,9 +300,22 @@ const SubjectsPage = () => {
                         type="file"
                         onChange={(e) => handleFileInputChange(e, selectedSubject?.code)}
                     />
-                    <label htmlFor={`student-upload-${selectedSubject?.code}`} style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                        <FileUpload sx={{ mr: 1 }} />
-                        Import Students
+                    <label
+                        htmlFor={`student-upload-${selectedSubject?.code}`}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            width: '100%'
+                        }}
+                    >
+                        <FileUpload sx={{ mr: 2, color: 'success.main' }} />
+                        <Box>
+                            <Typography variant="subtitle2">Import Students</Typography>
+                            <Typography variant="caption" color="text.secondary">
+                                Upload CSV file
+                            </Typography>
+                        </Box>
                     </label>
                 </MenuItem>
             </Menu>

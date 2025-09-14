@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface SubjectDomainService {
     Subject findByCode(Long code);
-    Subject create(Long code, String name, Integer year, Semester semester, List<Long> staffIds);
-    Subject update(Long code, String name, Integer year, Semester semester, List<Long> staffIds);
+    Subject create(Long code, String name, Integer year, Semester semester, List<Long> staffIds,List<Long> studentIds);
+    Subject update(Long code, String name, Integer year, Semester semester, List<Long> staffIds,List<Long> studentIds);
     List<Subject> findAll();
     Page<Subject> findAll(Pageable pageable);
     Subject enroll(Long studentId, Long subjectId);

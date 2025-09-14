@@ -26,7 +26,8 @@ const App = () => {
                         <Route path="/subjects/:subjectCode/exams" element={<ExamsPage/>}/>
                     </Route>
                     <Route element={<ProtectedRoute roles={["ROLE_ADMIN"]}/>}>
-                        <Route path="/subjects/create" element={<CreateSubjectPage/>}/>
+                        <Route path="/subjects/create" element={<CreateSubjectPage />} />
+                        <Route path="/subjects/:code/edit" element={<CreateSubjectPage />} />
                         <Route path="/subjects/:subjectCode/create-exam" element={<CreateExamPage/>}/>
                         <Route path="/rooms" element={<RoomsPage/>}/>
                         <Route path="/users" element={<UsersPage/>}/>

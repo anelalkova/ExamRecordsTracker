@@ -9,5 +9,6 @@ public record CreateSubjectDTO(
         String name,
         Integer year,
         Semester semester,
-        List<Long> staffIds
+        List<Long> staffIds,
+        List<Long> studentIds
 ) {}

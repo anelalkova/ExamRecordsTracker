@@ -10,7 +10,6 @@ import mk.finki.ukim.mk.exam_records.service.domain.SubjectDomainService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +21,7 @@ public class SubjectDomainServiceImpl implements SubjectDomainService {
     private final SubjectRepository subjectRepository;
     private final UserDomainServiceImpl userDomainService;
     private final UserRepository userRepository;
+
     public SubjectDomainServiceImpl(SubjectRepository subjectRepository, UserDomainServiceImpl userDomainService, UserRepository userRepository) {
         this.subjectRepository = subjectRepository;
         this.userDomainService = userDomainService;
@@ -34,7 +34,8 @@ public class SubjectDomainServiceImpl implements SubjectDomainService {
     }
 
     @Override
-    public Subject create(Long code, String name, Integer year, Semester semester, List<Long> staffIds) {
+    public Subject create(Long code, String name, Integer year, Semester semester,
+                          List<Long> staffIds, List<Long> studentIds) {
         if (subjectRepository.existsById(code)) {
             throw new IllegalArgumentException("Subject with code " + code + " already exists.");
         }
@@ -54,17 +55,31 @@ public class SubjectDomainServiceImpl implements SubjectDomainService {
                 if (!"ROLE_TEACHER".equals(user.getRole().getRole())) {
                     throw new IllegalArgumentException("User with ID " + id + " is not a teacher");
                 }
-
                 staff.add(user);
             }
         }
-
         subject.setStaff(staff);
+
+        List<User> students = new ArrayList<>();
+        if (studentIds != null && !studentIds.isEmpty()) {
+            for (Long id : studentIds) {
+                User student = userDomainService.findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("User with ID " + id + " not found"));
+
+                if (!student.isStudent()) {
+                    throw new IllegalArgumentException("User with ID " + id + " is not a student");
+                }
+                students.add(student);
+            }
+        }
+        subject.setStudents(students);
+
         return subjectRepository.save(subject);
     }
 
     @Override
-    public Subject update(Long code, String name, Integer year, Semester semester, List<Long> staffIds) {
+    public Subject update(Long code, String name, Integer year, Semester semester,
+                          List<Long> staffIds, List<Long> studentIds) {
         Subject subject = subjectRepository.findById(code)
                 .orElseThrow(() -> new IllegalArgumentException("Subject with code " + code + " not found"));
 
@@ -76,13 +91,17 @@ public class SubjectDomainServiceImpl implements SubjectDomainService {
                 .map(userDomainService::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .filter(user -> {
-                    String role = user.getRole().getRole();
-                    return "ROLE_TEACHER".equals(role);
-                })
+                .filter(user -> "ROLE_TEACHER".equals(user.getRole().getRole()))
                 .collect(Collectors.toCollection(ArrayList::new));
-
         subject.setStaff(staff);
+
+        List<User> students = studentIds.stream()
+                .map(userDomainService::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(User::isStudent)
+                .collect(Collectors.toCollection(ArrayList::new));
+        subject.setStudents(students);
 
         return subjectRepository.save(subject);
     }
@@ -112,7 +131,6 @@ public class SubjectDomainServiceImpl implements SubjectDomainService {
         }
 
         subject.getStudents().add(student);
-
         student.getSubjects().add(subject);
 
         subjectRepository.save(subject);

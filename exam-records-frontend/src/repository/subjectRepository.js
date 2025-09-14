@@ -10,6 +10,9 @@ const subjectRepository = {
     add: async (data) => {
         return await axiosInstance.post("/subjects/create", data);
     },
+    update: async (code, data) => {
+        return await axiosInstance.post(`/subjects/update/${code}`, data);
+    },
     findAllForUserPaged: async (userEmail, page = 0, size = 5) => {
         return await axiosInstance.get(`/subjects/find-all-for-student/${userEmail}?page=${page}&size=${size}`);
     },
