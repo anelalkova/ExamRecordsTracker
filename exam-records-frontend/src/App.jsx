@@ -12,6 +12,9 @@ import RoomsPage from "./ui/pages/RoomsPage/RoomsPage.jsx";
 import UsersPage from "./ui/pages/UsersPage/UsersPage.jsx";
 import ChangePasswordPage from "./ui/pages/ChangePasswordPage/ChangePasswordPage.jsx";
 import AdminRegistrationPage from "./ui/pages/AdminRegistrationPage/AdminRegistrationPage.jsx";
+import TeacherDashboard from "./ui/pages/TeacherDashboard/TeacherDashboard.jsx";
+import TeacherExamsPage from "./ui/pages/TeacherExamsPage/TeacherExamsPage.jsx";
+import GradeStudentsPage from "./ui/pages/GradeStudentsPage/GradeStudentsPage.jsx";
 
 const App = () => {
     return (
@@ -21,9 +24,16 @@ const App = () => {
                 <Route path="/change-password" element={<ChangePasswordPage/>}/>
                 <Route path="/" element={<Layout/>}>
                     <Route index element={<HomePage/>}/>
-                    <Route element={<ProtectedRoute roles={["ROLE_ADMIN", "ROLE_STUDENT"]}/>}>
+                    <Route element={<ProtectedRoute roles={["ROLE_ADMIN", "ROLE_STUDENT", "ROLE_TEACHER"]}/>}>
                         <Route path="subjects" element={<SubjectsPage/>}/>
                         <Route path="/subjects/:subjectCode/exams" element={<ExamsPage/>}/>
+                    </Route>
+                    <Route element={<ProtectedRoute roles={["ROLE_TEACHER"]}/>}>
+                        <Route path="/teacher" element={<TeacherDashboard/>}/>
+                        <Route path="/teacher/exams" element={<TeacherExamsPage/>}/>
+                        <Route path="/teacher/exams/:examId" element={<GradeStudentsPage/>}/>
+                        <Route path="/teacher/exams/:examId/grade" element={<GradeStudentsPage/>}/>
+                        <Route path="/subjects/:subjectCode/create-exam" element={<CreateExamPage/>}/>
                     </Route>
                     <Route element={<ProtectedRoute roles={["ROLE_ADMIN"]}/>}>
                         <Route path="/subjects/create" element={<CreateSubjectPage />} />

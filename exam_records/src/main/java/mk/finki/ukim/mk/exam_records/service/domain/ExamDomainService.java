@@ -10,8 +10,10 @@ import java.util.List;
 
 public interface ExamDomainService {
     Exam create(Long subjectCode,Long sessionId, LocalDate dateOfExam, LocalTime startTime, LocalTime endTime);
+    Exam create(Long subjectCode,Long sessionId, LocalDate dateOfExam, LocalTime startTime, LocalTime endTime, List<Long> roomIds);
     List<Exam> findAll();
     Exam register(Long examId, Long studentId);
     void attendExam(Long examId, Long studentId);
+    void unmarkAttendance(Long examId, Long studentId);
     Page<Exam> findAllForSubject(Long subjectCode, Pageable pageable);
 }

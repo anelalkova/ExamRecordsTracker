@@ -16,6 +16,9 @@ const subjectRepository = {
     findAllForUserPaged: async (userEmail, page = 0, size = 5) => {
         return await axiosInstance.get(`/subjects/find-all-for-student/${userEmail}?page=${page}&size=${size}`);
     },
+    findAllForTeacherPaged: async (userEmail, page = 0, size = 5) => {
+        return await axiosInstance.get(`/subjects/find-all-for-teacher/${userEmail}?page=${page}&size=${size}`);
+    },
     findById: async(code) => {
         return await axiosInstance.get(`/subjects/find-by-code/${code}`);
     }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     Box, 
     Container, 
@@ -25,6 +25,13 @@ const HomePage = () => {
     const { user } = useAuth();
     
     const isAdmin = user?.roles?.includes("ROLE_ADMIN");
+    const isTeacher = user?.roles?.includes("ROLE_TEACHER");
+
+    useEffect(() => {
+        if (isTeacher && !isAdmin) {
+            navigate('/teacher');
+        }
+    }, [isTeacher, isAdmin, navigate]);
     
     const adminCards = [
         {

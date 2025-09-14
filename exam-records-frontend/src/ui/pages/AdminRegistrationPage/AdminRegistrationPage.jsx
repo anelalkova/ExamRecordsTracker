@@ -131,7 +131,6 @@ const AdminRegistrationPage = () => {
             </Typography>
 
             <Grid container spacing={4}>
-                {/* Upload Section */}
                 <Grid item xs={12} md={8}>
                     <Card elevation={3}>
                         <CardContent sx={{ p: 4 }}>
@@ -210,7 +209,6 @@ const AdminRegistrationPage = () => {
                     </Card>
                 </Grid>
 
-                {/* Instructions Section */}
                 <Grid item xs={12} md={4}>
                     <Card elevation={2}>
                         <CardContent sx={{ p: 3 }}>
@@ -269,7 +267,6 @@ const AdminRegistrationPage = () => {
                 </Grid>
             </Grid>
 
-            {/* Results Dialog */}
             <Dialog
                 open={showResults}
                 onClose={() => setShowResults(false)}

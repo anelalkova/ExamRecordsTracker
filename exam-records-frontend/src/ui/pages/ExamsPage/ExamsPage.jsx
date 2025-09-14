@@ -15,7 +15,9 @@ import {
     Alert,
     Menu,
     MenuItem,
-    IconButton
+    IconButton,
+    Chip,
+    Stack
 } from "@mui/material";
 import { MoreVert as MoreVertIcon, FileDownload, FileUpload } from "@mui/icons-material";
 import useAuth from "../../../hooks/useAuth.js";
@@ -35,7 +37,7 @@ const ExamsPage = () => {
     const [messageType, setMessageType] = useState('');
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedExam, setSelectedExam] = useState(null);
-    const {examsPage, loading: examsLoading, error: examsError, refetch} = useExamsPaged(subjectCode, page, rowsPerPage);
+    const {examsPage, loading: examsLoading, error: examsError, refetch} = useExamsPaged(subjectCode, page, rowsPerPage, user);
     const {subject, loading: subjectLoading, error: subjectError} = useSubject(subjectCode);
 
     const handleChangePage = (event, newPage) => setPage(newPage);
@@ -167,14 +169,25 @@ const ExamsPage = () => {
                                     <TableCell>{exam.session.name}</TableCell>
                                     <TableCell align="center">
                                         {isStudent && (
-                                            <Button
-                                                variant="outlined"
-                                                size="small"
-                                                onClick={() => handleRegisterForExam(exam.id)}
-                                                sx={{ mr: 1 }}
-                                            >
-                                                Register
-                                            </Button>
+                                            <Stack direction="column" spacing={1} alignItems="center">
+                                                <Button
+                                                    variant={exam.isRegistered ? "contained" : "outlined"}
+                                                    size="small"
+                                                    onClick={() => handleRegisterForExam(exam.id)}
+                                                    disabled={exam.isRegistered}
+                                                    color={exam.isRegistered ? "success" : "primary"}
+                                                >
+                                                    {exam.isRegistered ? "Registered" : "Register"}
+                                                </Button>
+                                                {exam.isRegistered && (
+                                                    <Chip
+                                                        label={exam.hasAttended ? "Attended" : "Not Attended"}
+                                                        color={exam.hasAttended ? "success" : "warning"}
+                                                        size="small"
+                                                        variant="outlined"
+                                                    />
+                                                )}
+                                            </Stack>
                                         )}
                                         {canEdit && (
                                             <IconButton
