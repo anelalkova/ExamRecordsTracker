@@ -6,6 +6,7 @@ import mk.finki.ukim.mk.exam_records.models.User;
 import mk.finki.ukim.mk.exam_records.models.UserRole;
 import mk.finki.ukim.mk.exam_records.models.dto.CreateUserDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.DisplayUserDTO;
+import mk.finki.ukim.mk.exam_records.models.dto.DisplayStudentDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.LoginResponseDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.LoginUserDTO;
 import mk.finki.ukim.mk.exam_records.repository.UserRoleRepository;
@@ -77,6 +78,13 @@ public class UserApplicationServiceImpl implements UserApplicationService {
             throw new EntityNotFoundException("Role " + role + " not found");
         }
         return userDomainService.findAllByRole(userRole).stream().map(DisplayUserDTO::from).toList();
+    }
+
+    @Override
+    public List<DisplayStudentDTO> findAllStudents() {
+        return userDomainService.findAllStudents().stream()
+                .map(DisplayStudentDTO::from)
+                .toList();
     }
 
     @Override

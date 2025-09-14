@@ -12,18 +12,19 @@ import {
     FormHelperText,
     Checkbox,
     ListItemText,
+    Chip,
 } from "@mui/material";
 import { Autocomplete } from "@mui/material";
 import subjectRepository from "../../../repository/subjectRepository.js";
 import userRepository from "../../../repository/userRepository.js";
 import { useNavigate, useParams } from "react-router-dom";
+import StudentSelector from "../../components/forms/StudentSelector/StudentSelector.jsx";
 
 const semesters = ["Fall", "Spring"];
 
 const SubjectFormPage = () => {
     const { code: subjectCode } = useParams(); // For update
     const navigate = useNavigate();
-
     const [code, setCode] = useState("");
     const [name, setName] = useState("");
     const [year, setYear] = useState("");
@@ -31,24 +32,15 @@ const SubjectFormPage = () => {
     const [staffIds, setStaffIds] = useState([]);
     const [selectedStudents, setSelectedStudents] = useState([]); // full objects
     const [staffList, setStaffList] = useState([]);
-    const [studentList, setStudentList] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // Load all data
     useEffect(() => {
         const loadData = async () => {
             try {
-                // Load staff and students first
-                const [staffResponse, studentResponse] = await Promise.all([
-                    userRepository.findByRole("ROLE_TEACHER"),
-                    userRepository.findByRole("ROLE_STUDENT")
-                ]);
-
+                const staffResponse = await userRepository.findByRole("ROLE_TEACHER");
                 setStaffList(staffResponse.data);
-                setStudentList(studentResponse.data);
 
-                // If updating, load subject data after staff and students are loaded
                 if (subjectCode) {
                     const subjectResponse = await subjectRepository.findById(subjectCode);
                     const s = subjectResponse.data;
@@ -60,20 +52,20 @@ const SubjectFormPage = () => {
                     setYear(s.year.toString());
                     setSemester(s.semester);
 
-                    // Handle both possible data structures
                     if (s.staffIds) {
                         setStaffIds(s.staffIds);
                     } else if (s.subjectStaff) {
                         setStaffIds(s.subjectStaff.map(staff => staff.id));
                     }
 
-                    // Handle both possible data structures for students
                     let selectedStudentObjects = [];
                     if (s.studentIds) {
+                        const studentResponse = await userRepository.findByRole("ROLE_STUDENT");
                         selectedStudentObjects = studentResponse.data.filter(
                             student => s.studentIds.includes(student.id)
                         );
                     } else if (s.subjectStudents) {
+                        const studentResponse = await userRepository.findByRole("ROLE_STUDENT");
                         selectedStudentObjects = s.subjectStudents.map(student =>
                             studentResponse.data.find(st => st.id === student.id)
                         ).filter(Boolean);
@@ -206,27 +198,15 @@ const SubjectFormPage = () => {
                 </Select>
             </FormControl>
 
-            <FormControl fullWidth margin="normal">
-                <Autocomplete
-                    multiple
-                    options={studentList}
-                    getOptionLabel={(option) => `${option.name} ${option.surname}`}
+            <Box sx={{ mt: 2, mb: 1 }}>
+                <StudentSelector
                     value={selectedStudents}
-                    onChange={(event, newValue) => setSelectedStudents(newValue)}
-                    renderInput={(params) => <TextField {...params} label="Students" variant="outlined" />}
-                    filterSelectedOptions
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    renderOption={(props, option, { selected }) => (
-                        <li {...props}>
-                            <Checkbox
-                                style={{ marginRight: 8 }}
-                                checked={selected}
-                            />
-                            {option.name} {option.surname}
-                        </li>
-                    )}
+                    onChange={setSelectedStudents}
+                    label="Students"
+                    placeholder="Search students by name or index..."
+                    helperText="Select students to enroll in this subject"
                 />
-            </FormControl>
+            </Box>
 
             <Box mt={3} display="flex" justifyContent="space-between">
                 <Button variant="outlined" onClick={() => navigate("/subjects")}>

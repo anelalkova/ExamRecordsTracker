@@ -2,6 +2,7 @@ package mk.finki.ukim.mk.exam_records.controllers;
 
 import mk.finki.ukim.mk.exam_records.models.dto.CreateUserDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.DisplayUserDTO;
+import mk.finki.ukim.mk.exam_records.models.dto.DisplayStudentDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.LoginResponseDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.LoginUserDTO;
 import mk.finki.ukim.mk.exam_records.models.exceptions.InvalidArgumentsException;
@@ -43,6 +44,11 @@ public class UserController {
     @GetMapping("/find-by-role/{role}")
     public List<DisplayUserDTO> findByRole(@PathVariable String role) {
         return userApplicationService.findAllByRole(role);
+    }
+
+    @GetMapping("/find-all-students")
+    public List<DisplayStudentDTO> findAllStudents() {
+        return userApplicationService.findAllStudents();
     }
 
     @PutMapping("/{id}/role")

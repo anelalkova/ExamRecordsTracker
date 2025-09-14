@@ -16,6 +16,8 @@ public interface UserDomainService extends UserDetailsService {
 
     List<User> findAllByRole(UserRole role);
 
+    List<User> findAllStudents();
+
     Optional<User> findById(Long id);
 
     Optional<User> getLoggedInUser();

@@ -92,6 +92,13 @@ public class UserDomainServiceImpl implements UserDomainService {
     }
 
     @Override
+    public List<User> findAllStudents() {
+        UserRole studentRole = userRoleRepository.findByRole(Roles.STUDENT)
+                .orElseThrow(() -> new RuntimeException("Student role not found"));
+        return userRepository.findAllByRole(studentRole);
+    }
+
+    @Override
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }

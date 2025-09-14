@@ -13,6 +13,9 @@ const userRepository = {
     findByRole: async (role) => {
         return await axiosInstance.get(`/users/find-by-role/${role}`, role)
     },
+    findAllStudents: async () => {
+        return await axiosInstance.get("/users/find-all-students");
+    },
     updateUserRole: async (userId, roleId) => {
         return await axiosInstance.put(`/users/${userId}/role?roleId=${roleId}`);
     }

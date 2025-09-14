@@ -2,6 +2,7 @@ package mk.finki.ukim.mk.exam_records.service.application;
 
 import mk.finki.ukim.mk.exam_records.models.dto.CreateUserDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.DisplayUserDTO;
+import mk.finki.ukim.mk.exam_records.models.dto.DisplayStudentDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.LoginResponseDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.LoginUserDTO;
 
@@ -18,6 +19,8 @@ public interface UserApplicationService {
     List<DisplayUserDTO> findAll();
 
     List<DisplayUserDTO> findAllByRole(String role);
+
+    List<DisplayStudentDTO> findAllStudents();
 
     DisplayUserDTO updateUserRole(Long userId, Long roleId);
 }
