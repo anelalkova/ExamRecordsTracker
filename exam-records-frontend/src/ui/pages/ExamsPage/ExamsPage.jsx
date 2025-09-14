@@ -56,7 +56,7 @@ const ExamsPage = () => {
 
     const handleRegisterForExam = async (examId) => {
         try {
-            await examsRepository.register(examId, user.id);
+            await examsRepository.register(examId, user.userId);
             setMessage('Successfully registered for exam!');
             setMessageType('success');
             refetch();

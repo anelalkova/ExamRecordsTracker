@@ -6,13 +6,15 @@ import mk.finki.ukim.mk.exam_records.models.Session;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record DisplayExamDTO(DisplaySubjectDTO subject,
+public record DisplayExamDTO(Long id,
+                             DisplaySubjectDTO subject,
                              Session session,
                              LocalDate dateOfExam,
                              LocalTime startTime,
                              LocalTime endTime) {
     public static DisplayExamDTO from(Exam exam) {
         return new DisplayExamDTO(
+                exam.getId(),
                 DisplaySubjectDTO.from(exam.getSubject()),
                 exam.getSession(),
                 exam.getDateOfExam(),

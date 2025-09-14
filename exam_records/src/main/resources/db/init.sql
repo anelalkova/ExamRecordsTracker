@@ -150,3 +150,5 @@ EXCEPTION WHEN unique_violation THEN
         enabled = true
     WHERE email = 'admin@examrecords.com';
 END $$;
+
+alter table exam_records.exam_room_reservation drop column capacity;

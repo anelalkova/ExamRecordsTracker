@@ -14,7 +14,7 @@ public class StudentExam {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User student;
 
     @ManyToOne
