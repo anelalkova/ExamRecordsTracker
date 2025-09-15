@@ -1,13 +1,10 @@
 package mk.finki.ukim.mk.exam_records.controllers;
 
-import mk.finki.ukim.mk.exam_records.models.dto.CreateUserDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.DisplayUserDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.DisplayStudentDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.LoginResponseDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.LoginUserDTO;
-import mk.finki.ukim.mk.exam_records.models.exceptions.InvalidArgumentsException;
 import mk.finki.ukim.mk.exam_records.models.exceptions.InvalidUserCredentialsException;
-import mk.finki.ukim.mk.exam_records.models.exceptions.PasswordsDoNotMatchException;
 import mk.finki.ukim.mk.exam_records.service.application.UserApplicationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +16,9 @@ import java.util.List;
 public class UserController {
 
     private final UserApplicationService userApplicationService;
-
     public UserController(UserApplicationService userApplicationService) {
         this.userApplicationService = userApplicationService;
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginUserDTO loginUserDto) {

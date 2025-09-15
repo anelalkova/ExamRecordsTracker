@@ -243,3 +243,5 @@ DO $$
 
 
 COMMIT;
+
+alter table exam_records.users alter column student_program_id drop not null;
