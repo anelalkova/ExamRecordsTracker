@@ -154,6 +154,11 @@ const TeacherDashboard = () => {
                                     <Typography variant="body2">
                                         Time: {exam.startTime} - {exam.endTime}
                                     </Typography>
+                                    {exam.rooms && exam.rooms.length > 0 && (
+                                        <Typography variant="body2">
+                                            Room(s): {exam.rooms.map(room => room.name).join(', ')}
+                                        </Typography>
+                                    )}
                                 </CardContent>
                                 <CardActions>
                                     <Button 

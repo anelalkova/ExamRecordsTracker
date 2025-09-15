@@ -5,6 +5,8 @@ import mk.finki.ukim.mk.exam_records.models.Session;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public record StudentExamViewDTO(Long id,
                                  DisplaySubjectDTO subject,
@@ -12,6 +14,7 @@ public record StudentExamViewDTO(Long id,
                                  LocalDate dateOfExam,
                                  LocalTime startTime,
                                  LocalTime endTime,
+                                 Set<DisplayRoomDTO> rooms,
                                  boolean isRegistered,
                                  boolean hasAttended) {
     
@@ -23,6 +26,9 @@ public record StudentExamViewDTO(Long id,
                 exam.getDateOfExam(),
                 exam.getStartTime(),
                 exam.getEndTime(),
+                exam.getRooms().stream()
+                        .map(DisplayRoomDTO::from)
+                        .collect(Collectors.toSet()),
                 isRegistered,
                 hasAttended
         );

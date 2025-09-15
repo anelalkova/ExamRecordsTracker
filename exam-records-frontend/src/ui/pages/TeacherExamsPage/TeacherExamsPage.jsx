@@ -110,6 +110,12 @@ const TeacherExamsPage = () => {
                                         <strong>Time:</strong> {exam.startTime} - {exam.endTime}
                                     </Typography>
 
+                                    {exam.rooms && exam.rooms.length > 0 && (
+                                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                                            <strong>Room(s):</strong> {exam.rooms.map(room => room.name).join(', ')}
+                                        </Typography>
+                                    )}
+
                                     {exam.subject.year && (
                                         <Typography variant="body2" color="text.secondary" gutterBottom>
                                             <strong>Year:</strong> {exam.subject.year}
