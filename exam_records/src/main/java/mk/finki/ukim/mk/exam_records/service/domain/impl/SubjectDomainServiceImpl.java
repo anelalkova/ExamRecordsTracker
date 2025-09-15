@@ -143,4 +143,10 @@ public class SubjectDomainServiceImpl implements SubjectDomainService {
         User user = userDomainService.findByEmail(userEmail);
         return subjectRepository.findAllForStudent(user.getId(), pageable);
     }
+
+    @Override
+    public Page<Subject> findAllForTeacher(String userEmail, Pageable pageable) {
+        User user = userDomainService.findByEmail(userEmail);
+        return subjectRepository.findAllForTeacher(user.getId(), pageable);
+    }
 }

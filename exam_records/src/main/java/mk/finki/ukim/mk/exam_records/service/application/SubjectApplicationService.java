@@ -16,4 +16,5 @@ public interface SubjectApplicationService {
     Page<DisplaySubjectDTO> findAll(Pageable pageable);
     Optional<DisplaySubjectDTO> enroll(Long studentId, Long subjectId);
     Page<DisplaySubjectDTO> findAllForStudent(String userEmail, Pageable pageable);
+    Page<DisplaySubjectDTO> findAllForTeacher(String userEmail, Pageable pageable);
 }

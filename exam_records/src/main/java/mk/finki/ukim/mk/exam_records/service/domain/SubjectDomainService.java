@@ -14,4 +14,5 @@ public interface SubjectDomainService {
     Page<Subject> findAll(Pageable pageable);
     Subject enroll(Long studentId, Long subjectId);
     Page<Subject> findAllForStudent(String userEmail, Pageable pageable);
+    Page<Subject> findAllForTeacher(String userEmail, Pageable pageable);
 }

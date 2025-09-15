@@ -276,7 +276,7 @@ const StudentSelector = ({
                 onChange={(event, newValue) => onChange(newValue)}
                 onInputChange={(event, newInputValue) => setSearchText(newInputValue)}
                 renderInput={renderInput}
-                filterSelectedOptions={false} // Show selected options in dropdown for clarity
+                filterSelectedOptions={false}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderOption={renderOption}
                 renderTags={multiple ? renderTags : undefined}

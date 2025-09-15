@@ -92,4 +92,16 @@ public class SubjectController {
                 page.getTotalPages()
         );
     }
+
+    @GetMapping("/find-all-for-teacher/{userEmail}")
+    public PageDTO<DisplaySubjectDTO> findAllForTeacher(@PathVariable String userEmail, Pageable pageable) {
+        var page = subjectApplicationService.findAllForTeacher(userEmail, pageable);
+        return new PageDTO<>(
+                page.getContent(),
+                page.getTotalElements(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalPages()
+        );
+    }
 }

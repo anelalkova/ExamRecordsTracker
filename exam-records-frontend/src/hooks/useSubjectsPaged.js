@@ -13,6 +13,8 @@ const useSubjectsPaged = (userEmail, roles, page = 0, size = 5) => {
                 let response;
                 if (roles.includes("ROLE_STUDENT")) {
                     response = await subjectRepository.findAllForUserPaged(userEmail, page, size);
+                } else if (roles.includes("ROLE_TEACHER")) {
+                    response = await subjectRepository.findAllForTeacherPaged(userEmail, page, size);
                 } else {
                     response = await subjectRepository.findAllPaged(page, size);
                 }

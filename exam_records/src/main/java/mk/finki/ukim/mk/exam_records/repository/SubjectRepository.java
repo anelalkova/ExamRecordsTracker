@@ -19,4 +19,7 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
     @Query("SELECT s FROM Subject s JOIN s.students st WHERE st.id = :studentId")
     Page<Subject> findAllForStudent(@Param("studentId") Long studentId, Pageable pageable);
+
+    @Query("SELECT s FROM Subject s JOIN s.staff t WHERE t.id = :teacherId")
+    Page<Subject> findAllForTeacher(@Param("teacherId") Long teacherId, Pageable pageable);
 }

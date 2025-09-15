@@ -8,7 +8,8 @@ import useAuth from "../../../../hooks/useAuth.js";
 
 const pages = [
     {path: "/", name: "home"},
-    {path: "/subjects", name: "subjects", roles: ["ROLE_ADMIN", "ROLE_STUDENT"]},
+    {path: "/subjects", name: "subjects", roles: ["ROLE_ADMIN", "ROLE_STUDENT", "ROLE_TEACHER"]},
+    {path: "/teacher/exams", name: "my exams", roles: ["ROLE_TEACHER"]},
     {path: "/rooms", name: "rooms", roles: ["ROLE_ADMIN"]},
     {path: "/users", name: "users", roles: ["ROLE_ADMIN"]},
     {path: "/admin/register-students", name: "register students", roles: ["ROLE_ADMIN"]},

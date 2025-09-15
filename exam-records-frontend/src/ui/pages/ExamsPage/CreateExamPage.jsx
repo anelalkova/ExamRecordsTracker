@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Paper,
@@ -14,6 +14,8 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth.js';
 import examsRepository from '../../../repository/examsRepository.js';
+import teacherRepository from '../../../repository/teacherRepository.js';
+import roomRepository from '../../../repository/roomRepository.js';
 
 const CreateExamPage = () => {
     const navigate = useNavigate();
@@ -25,12 +27,16 @@ const CreateExamPage = () => {
         sessionId: '',
         dateOfExam: '',
         startTime: '',
-        endTime: ''
+        endTime: '',
+        roomIds: []
     });
     
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [rooms, setRooms] = useState([]);
+    const [selectedRooms, setSelectedRooms] = useState([]);
+    const [totalCapacity, setTotalCapacity] = useState(0);
 
     const sessions = [
         { id: 1, name: 'First Midterm', value: 'first_midterm' },
@@ -48,6 +54,35 @@ const CreateExamPage = () => {
         setError('');
     };
 
+    useEffect(() => {
+        const loadRooms = async () => {
+            try {
+                const response = await roomRepository.findAll();
+                setRooms(response.data || []);
+            } catch (err) {
+                console.error('Failed to load rooms:', err);
+            }
+        };
+        
+        loadRooms();
+    }, []);
+
+    const handleRoomSelection = (event, newValue) => {
+        setSelectedRooms(newValue || []);
+        const roomIds = (newValue || [])
+            .filter(room => room && room.id)
+            .map(room => room.id);
+        const capacity = (newValue || [])
+            .filter(room => room && room.capacity)
+            .reduce((sum, room) => sum + room.capacity, 0);
+        
+        setTotalCapacity(capacity);
+        setFormData(prev => ({
+            ...prev,
+            roomIds: roomIds
+        }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -59,10 +94,17 @@ const CreateExamPage = () => {
                 sessionId: parseInt(formData.sessionId),
                 dateOfExam: formData.dateOfExam,
                 startTime: formData.startTime,
-                endTime: formData.endTime
+                endTime: formData.endTime,
+                roomIds: (formData.roomIds || []).filter(id => id != null)
             };
 
-            await examsRepository.create(examData);
+            console.log('Sending exam data:', examData);
+
+            if (user.roles.includes("ROLE_TEACHER")) {
+                await teacherRepository.createExam(examData, user.userId);
+            } else {
+                await examsRepository.create(examData);
+            }
             setSuccess('Exam created successfully!');
             
             setTimeout(() => {
@@ -76,7 +118,7 @@ const CreateExamPage = () => {
         }
     };
 
-    const canCreate = user.roles.includes("ROLE_ADMIN");
+    const canCreate = user.roles.includes("ROLE_ADMIN") || user.roles.includes("ROLE_TEACHER");
 
     if (!canCreate) {
         return (
@@ -157,6 +199,34 @@ const CreateExamPage = () => {
                                 onChange={(e) => handleInputChange('endTime', e.target.value)}
                                 required
                                 InputLabelProps={{ shrink: true }}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <Autocomplete
+                                multiple
+                                options={rooms}
+                                getOptionLabel={(option) => `${option.name} (Capacity: ${option.capacity})`}
+                                value={selectedRooms}
+                                onChange={handleRoomSelection}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Select Rooms"
+                                        placeholder="Choose one or more rooms"
+                                        helperText={`Total capacity: ${totalCapacity} seats`}
+                                    />
+                                )}
+                                renderTags={(value, getTagProps) =>
+                                    value.map((option, index) => (
+                                        <Chip
+                                            variant="outlined"
+                                            label={`${option.name} (${option.capacity})`}
+                                            {...getTagProps({ index })}
+                                            key={option.id}
+                                        />
+                                    ))
+                                }
                             />
                         </Grid>
 

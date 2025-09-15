@@ -72,4 +72,10 @@ public class SubjectApplicationServiceImpl implements SubjectApplicationService 
         return subjectDomainService.findAllForStudent(userEmail, pageable)
                 .map(DisplaySubjectDTO::from);
     }
+
+    @Override
+    public Page<DisplaySubjectDTO> findAllForTeacher(String userEmail, Pageable pageable) {
+        return subjectDomainService.findAllForTeacher(userEmail, pageable)
+                .map(DisplaySubjectDTO::from);
+    }
 }

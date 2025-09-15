@@ -20,17 +20,17 @@ import userRepository from "../../../repository/userRepository.js";
 import { useNavigate, useParams } from "react-router-dom";
 import StudentSelector from "../../components/forms/StudentSelector/StudentSelector.jsx";
 
-const semesters = ["Fall", "Spring"];
+const semesters = ["WINTER", "SUMMER"];
 
 const SubjectFormPage = () => {
-    const { code: subjectCode } = useParams(); // For update
+    const { code: subjectCode } = useParams();
     const navigate = useNavigate();
     const [code, setCode] = useState("");
     const [name, setName] = useState("");
     const [year, setYear] = useState("");
     const [semester, setSemester] = useState("");
     const [staffIds, setStaffIds] = useState([]);
-    const [selectedStudents, setSelectedStudents] = useState([]); // full objects
+    const [selectedStudents, setSelectedStudents] = useState([]);
     const [staffList, setStaffList] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);

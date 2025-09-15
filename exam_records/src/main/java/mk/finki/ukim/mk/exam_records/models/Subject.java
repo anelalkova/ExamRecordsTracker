@@ -20,6 +20,7 @@ public class Subject {
 
     private Integer year;
 
+    @Enumerated(EnumType.STRING)
     private Semester semester;
 
     @ManyToMany

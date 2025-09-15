@@ -12,8 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ExamDomainServiceImpl implements ExamDomainService {
@@ -40,10 +39,40 @@ public class ExamDomainServiceImpl implements ExamDomainService {
 
     @Override
     public Exam create(Long subjectCode, Long sessionId, LocalDate dateOfExam, LocalTime startTime, LocalTime endTime) {
+        return create(subjectCode, sessionId, dateOfExam, startTime, endTime, null);
+    }
+
+    @Override
+    public Exam create(Long subjectCode, Long sessionId, LocalDate dateOfExam, LocalTime startTime, LocalTime endTime, List<Long> roomIds) {
         Subject subject = subjectDomainService.findByCode(subjectCode);
         Session session = sessionRepository.findById(sessionId).orElseThrow(() -> new IllegalArgumentException("Session not found"));
 
         Exam exam = new Exam(subject, session, dateOfExam, startTime, endTime);
+        
+        if (roomIds != null && !roomIds.isEmpty()) {
+            Set<Room> rooms = new HashSet<>();
+            int totalCapacity = 0;
+            
+            for (Long roomId : roomIds) {
+                if (roomId != null) {
+                    Room room = roomDomainService.findRoom(roomId);
+                    rooms.add(room);
+                    totalCapacity += room.getCapacity();
+                }
+            }
+            
+            int expectedStudents = subject.getStudents().size();
+            
+            if (totalCapacity < expectedStudents) {
+                throw new IllegalArgumentException(
+                    String.format("Insufficient room capacity. Required: %d, Available: %d", 
+                                expectedStudents, totalCapacity)
+                );
+            }
+            
+            exam.setRooms(rooms);
+        }
+        
         return examRepository.save(exam);
     }
 
@@ -89,6 +118,17 @@ public class ExamDomainServiceImpl implements ExamDomainService {
                 .orElseThrow(() -> new IllegalArgumentException("The student didn't register for the exam"));
 
         studentExam.setShowed(true);
+        studentExamRepository.save(studentExam);
+    }
+
+    @Transactional
+    @Override
+    public void unmarkAttendance(Long examId, Long studentId) {
+        StudentExam studentExam = studentExamRepository
+                .findByExamIdAndStudentId(examId, studentId)
+                .orElseThrow(() -> new IllegalArgumentException("The student didn't register for the exam"));
+
+        studentExam.setShowed(false);
         studentExamRepository.save(studentExam);
     }
 

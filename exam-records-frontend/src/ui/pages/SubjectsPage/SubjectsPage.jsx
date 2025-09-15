@@ -199,7 +199,6 @@ const SubjectsPage = () => {
                                     </TableCell>
                                     <TableCell align="center">
                                         <Box display="flex" gap={1} justifyContent="center" alignItems="center">
-                                            {/* Primary Action - Navigate to Exams */}
                                             <Button
                                                 variant="contained"
                                                 color="primary"
@@ -211,7 +210,6 @@ const SubjectsPage = () => {
                                                 Exams
                                             </Button>
 
-                                            {/* Secondary Action - Edit (only for admins) */}
                                             {canEdit && (
                                                 <Button
                                                     variant="outlined"
@@ -228,7 +226,6 @@ const SubjectsPage = () => {
                                                 </Button>
                                             )}
 
-                                            {/* Additional Actions Menu (only for admins) */}
                                             {canEdit && (
                                                 <IconButton
                                                     onClick={(e) => {

@@ -2,6 +2,7 @@ package mk.finki.ukim.mk.exam_records.controllers;
 
 import mk.finki.ukim.mk.exam_records.models.dto.CreateExamDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.DisplayExamDTO;
+import mk.finki.ukim.mk.exam_records.models.dto.StudentExamViewDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.PageDTO;
 import mk.finki.ukim.mk.exam_records.models.exceptions.InvalidArgumentsException;
 import mk.finki.ukim.mk.exam_records.models.exceptions.PasswordsDoNotMatchException;
@@ -58,9 +59,32 @@ public class ExamController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{examId}/students/{studentId}/attendance")
+    public ResponseEntity<Void> unmarkAttendance(
+            @PathVariable Long examId,
+            @PathVariable Long studentId) {
+        examApplicationService.unmarkAttendance(examId, studentId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/all-exams-for-subject/{subjectCode}")
     public PageDTO<DisplayExamDTO> getAllExamsForSubject(@PathVariable Long subjectCode, Pageable pageable) {
         var page = examApplicationService.findAllForSubject(subjectCode, pageable);
+        return new PageDTO<>(
+                page.getContent(),
+                page.getTotalElements(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalPages()
+        );
+    }
+
+    @GetMapping("/all-exams-for-subject/{subjectCode}/student/{studentId}")
+    public PageDTO<StudentExamViewDTO> getAllExamsForSubjectAsStudent(
+            @PathVariable Long subjectCode, 
+            @PathVariable Long studentId, 
+            Pageable pageable) {
+        var page = examApplicationService.findAllForSubjectAsStudent(subjectCode, studentId, pageable);
         return new PageDTO<>(
                 page.getContent(),
                 page.getTotalElements(),
