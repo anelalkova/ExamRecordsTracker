@@ -6,10 +6,11 @@ import {
     Typography,
     Container,
     Paper,
+    MenuItem,
+    FormControl,
     InputLabel,
     Select,
-    MenuItem,
-    FormControl
+    Alert,
 } from "@mui/material";
 import userRepository from "../../../../repository/userRepository.js";
 import { useNavigate } from "react-router";
@@ -19,148 +20,151 @@ const initialFormData = {
     name: "",
     surname: "",
     email: "",
-    password: "",
-    repeatPassword: "",
+    role: "",
     index: "",
-    roleId: 1,
-    studentProgramId: ""
+    studentProgram: ""
 };
+
+const roles = ["ROLE_STUDENT", "ROLE_TEACHER", "ROLE_ADMIN"];
 
 const Register = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState(initialFormData);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
-    const { programs, loading, error } = useStudentPrograms();
+    const { programs, loading: programsLoading, error: programsError } = useStudentPrograms();
 
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = () => {
-        userRepository
-            .register(formData)
-            .then(() => {
-                setFormData(initialFormData);
-                navigate("/login");
-            })
-            .catch((error) => {
-                
-            });
+    const handleSubmit = async () => {
+        setError("");
+        setSuccess("");
+
+        if (!formData.name || !formData.surname || !formData.email || !formData.role) {
+            setError("Please fill all required fields.");
+            return;
+        }
+
+        if (formData.role === "ROLE_STUDENT" && !formData.studentProgram) {
+            setError("Student Program is required for students.");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await userRepository.create(formData);
+            setSuccess("User registered successfully! An email with credentials was sent.");
+            setFormData(initialFormData);
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to register user.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <Container maxWidth="sm">
-            <Paper elevation={3} sx={{ padding: 4, mt: 4 }}>
-                <Typography variant="h5" align="center" gutterBottom>
-                    Register
-                </Typography>
-                <Box>
+        <>
+
+            <Container maxWidth="sm">
+                <Paper elevation={3} sx={{ padding: 4, mt: 4 }}>
+                    <Typography variant="h5" align="center" gutterBottom>
+                        Register New User
+                    </Typography>
+
+                    {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+                    {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+
                     <TextField
                         fullWidth
                         label="Name"
                         name="name"
                         margin="normal"
-                        required
                         value={formData.name}
                         onChange={handleChange}
+                        required
                     />
                     <TextField
                         fullWidth
                         label="Surname"
                         name="surname"
                         margin="normal"
-                        required
                         value={formData.surname}
                         onChange={handleChange}
+                        required
                     />
                     <TextField
                         fullWidth
                         label="Email"
                         name="email"
                         margin="normal"
-                        required
                         value={formData.email}
                         onChange={handleChange}
-                    />
-                    <TextField
-                        fullWidth
-                        label="Password"
-                        name="password"
-                        type="password"
-                        margin="normal"
                         required
-                        value={formData.password}
-                        onChange={handleChange}
                     />
+
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel>Role</InputLabel>
+                        <Select
+                            name="role"
+                            value={formData.role}
+                            onChange={handleChange}
+                            label="Role"
+                            required
+                        >
+                            {roles.map((r) => (
+                                <MenuItem key={r} value={r}>
+                                    {r.replace("ROLE_", "")}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    {formData.role === "ROLE_STUDENT" && (
+                        <FormControl fullWidth margin="normal">
+                            <InputLabel>Student Program</InputLabel>
+                            <Select
+                                name="studentProgram"
+                                value={formData.studentProgram}
+                                onChange={handleChange}
+                                label="Student Program"
+                                required
+                            >
+                                {programs.map((p) => (
+                                    <MenuItem key={p.name} value={p.name}>
+                                        {p.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    )}
+
                     <TextField
                         fullWidth
-                        label="Repeat Password"
-                        name="repeatPassword"
-                        type="password"
-                        margin="normal"
-                        required
-                        value={formData.repeatPassword}
-                        onChange={handleChange}
-                    />
-                    <TextField
-                        fullWidth
-                        label="Index"
+                        label="Index (Optional)"
                         name="index"
-                        type="text"
                         margin="normal"
-                        required
                         value={formData.index}
                         onChange={handleChange}
+                        disabled={formData.role !== "ROLE_STUDENT"}
                     />
 
-                    <TextField
-                        select
-                        fullWidth
-                        margin="normal"
-                        label="Role"
-                        name="roleId"
-                        value={formData.roleId || ""}
-                        onChange={handleChange}
-                    >
-                        <MenuItem value="" disabled>
-                            Select a role
-                        </MenuItem>
-                        <MenuItem value={1}>Student</MenuItem>
-                        <MenuItem value={2}>Teacher</MenuItem>
-                        <MenuItem value={3}>Admin</MenuItem>
-                    </TextField>
-
-                    <TextField
-                        select
-                        fullWidth
-                        margin="normal"
-                        label="Student Program"
-                        name="studentProgramId"
-                        value={formData.studentProgramId || ""}
-                        onChange={handleChange}
-                    >
-                        <MenuItem value="" disabled>
-                            Select a program
-                        </MenuItem>
-                        {programs.map((program) => (
-                            <MenuItem key={program.id} value={program.id}>
-                                {program.name}
-                            </MenuItem>
-                        ))}
-                    </TextField>
                     <Button
                         fullWidth
                         variant="contained"
-                        type="submit"
                         sx={{ mt: 2 }}
                         onClick={handleSubmit}
+                        disabled={loading}
                     >
-                        Register
+                        {loading ? "Registering..." : "Register"}
                     </Button>
-                </Box>
-            </Paper>
-        </Container>
+                </Paper>
+            </Container>
+        </>
     );
 };
 

@@ -1,7 +1,9 @@
 package mk.finki.ukim.mk.exam_records.controllers;
 
+import mk.finki.ukim.mk.exam_records.models.dto.CreateUserDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.DisplayUserDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.StudentCsvImportDTO;
+import mk.finki.ukim.mk.exam_records.models.dto.UserCsvDTO;
 import mk.finki.ukim.mk.exam_records.models.exceptions.InvalidArgumentsException;
 import mk.finki.ukim.mk.exam_records.service.application.AdminRegistrationService;
 import org.springframework.http.HttpStatus;
@@ -64,5 +66,15 @@ public class AdminRegistrationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    @PostMapping("/create-user")
+    public ResponseEntity<DisplayUserDTO> createUser(@RequestBody UserCsvDTO createUserDTO) {
+        try {
+            DisplayUserDTO user = adminRegistrationService.registerUser(createUserDTO);
+            return ResponseEntity.ok(user);
+        } catch (InvalidArgumentsException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
 }
 

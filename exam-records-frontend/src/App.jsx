@@ -12,6 +12,7 @@ import RoomsPage from "./ui/pages/RoomsPage/RoomsPage.jsx";
 import UsersPage from "./ui/pages/UsersPage/UsersPage.jsx";
 import ChangePasswordPage from "./ui/pages/ChangePasswordPage/ChangePasswordPage.jsx";
 import AdminRegistrationPage from "./ui/pages/AdminRegistrationPage/AdminRegistrationPage.jsx";
+import Register from "./ui/components/auth/Register/Register.jsx";
 
 const App = () => {
     return (
@@ -26,6 +27,7 @@ const App = () => {
                         <Route path="/subjects/:subjectCode/exams" element={<ExamsPage/>}/>
                     </Route>
                     <Route element={<ProtectedRoute roles={["ROLE_ADMIN"]}/>}>
+                        <Route path="/users/create" element={<Register />} />
                         <Route path="/subjects/create" element={<CreateSubjectPage />} />
                         <Route path="/subjects/:code/edit" element={<CreateSubjectPage />} />
                         <Route path="/subjects/:subjectCode/create-exam" element={<CreateExamPage/>}/>

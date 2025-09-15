@@ -151,4 +151,4 @@ EXCEPTION WHEN unique_violation THEN
     WHERE email = 'admin@examrecords.com';
 END $$;
 
-alter table exam_records.exam_room_reservation drop column capacity;
+alter table exam_records.student_exam drop column student_id;

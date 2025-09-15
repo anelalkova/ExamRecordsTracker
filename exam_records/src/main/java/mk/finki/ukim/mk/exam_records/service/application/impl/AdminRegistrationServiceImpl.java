@@ -4,8 +4,10 @@ import mk.finki.ukim.mk.exam_records.models.StudentProgram;
 import mk.finki.ukim.mk.exam_records.models.User;
 import mk.finki.ukim.mk.exam_records.models.UserRole;
 import mk.finki.ukim.mk.exam_records.models.constants.Roles;
+import mk.finki.ukim.mk.exam_records.models.dto.CreateUserDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.DisplayUserDTO;
 import mk.finki.ukim.mk.exam_records.models.dto.StudentCsvImportDTO;
+import mk.finki.ukim.mk.exam_records.models.dto.UserCsvDTO;
 import mk.finki.ukim.mk.exam_records.models.exceptions.InvalidArgumentsException;
 import mk.finki.ukim.mk.exam_records.repository.StudentProgramRepository;
 import mk.finki.ukim.mk.exam_records.repository.UserRepository;
@@ -132,7 +134,58 @@ public class AdminRegistrationServiceImpl implements AdminRegistrationService {
                 temporaryPassword
         );
     }
-    
+    @Override
+    @Transactional
+    public DisplayUserDTO registerUser(UserCsvDTO dto) {
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new InvalidArgumentsException("User with email " + dto.getEmail() + " already exists");
+        }
+        UserRole role = userRoleRepository.findByRole(dto.getRole())
+                .orElseThrow(() -> new InvalidArgumentsException("Role not found: " + dto.getRole()));
+
+        StudentProgram program = null;
+        Long index = null;
+
+        if ("ROLE_STUDENT".equals(dto.getRole())) {
+            if (dto.getStudentProgram() == null || dto.getStudentProgram().isEmpty()) {
+                throw new InvalidArgumentsException("Student program is required for students");
+            }
+            program = studentProgramRepository.findAll().stream()
+                    .filter(sp -> sp.getName().equalsIgnoreCase(dto.getStudentProgram().trim()))
+                    .findFirst()
+                    .orElseThrow(() -> new InvalidArgumentsException("Student program not found: " + dto.getStudentProgram()));
+
+            if (dto.getIndex() != null && !dto.getIndex().isEmpty()) {
+                index = Long.parseLong(dto.getIndex());
+            }
+        }
+
+        String temporaryPassword = passwordService.generateRandomPassword();
+        String encodedPassword = passwordService.encodePassword(temporaryPassword);
+
+        User user = new User(
+                dto.getName(),
+                dto.getSurname(),
+                dto.getEmail(),
+                encodedPassword,
+                role,
+                index,
+                program
+        );
+
+        user.setIsFirstLogin(true);
+        User savedUser = userRepository.save(user);
+
+        emailService.sendStudentCredentials(
+                savedUser.getEmail(),
+                savedUser.getName() + " " + savedUser.getSurname(),
+                temporaryPassword
+        );
+
+        return DisplayUserDTO.from(savedUser);
+    }
+
+
     private void validateStudentData(StudentCsvImportDTO studentData) {
         if (studentData.getName() == null || studentData.getName().trim().isEmpty()) {
             throw new InvalidArgumentsException("Student name is required");

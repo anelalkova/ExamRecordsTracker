@@ -18,6 +18,9 @@ const userRepository = {
     },
     updateUserRole: async (userId, roleId) => {
         return await axiosInstance.put(`/users/${userId}/role?roleId=${roleId}`);
+    },
+    create: async (data) =>{
+        return await axiosInstance.post("admin/registration/create-user",data);
     }
 };
 

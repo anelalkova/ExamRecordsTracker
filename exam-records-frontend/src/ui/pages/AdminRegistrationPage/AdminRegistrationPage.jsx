@@ -37,6 +37,7 @@ import {
 } from '@mui/icons-material';
 import useAuth from '../../../hooks/useAuth.js';
 import axiosInstance from '../../../axios/axios.js';
+import { useNavigate } from 'react-router-dom';
 
 const AdminRegistrationPage = () => {
     const { user } = useAuth();
@@ -45,6 +46,7 @@ const AdminRegistrationPage = () => {
     const [results, setResults] = useState(null);
     const [error, setError] = useState('');
     const [showResults, setShowResults] = useState(false);
+    const navigate = useNavigate();
 
     const handleFileSelect = (event) => {
         const selectedFile = event.target.files[0];
@@ -81,7 +83,7 @@ const AdminRegistrationPage = () => {
             setResults(response.data);
             setShowResults(true);
             setFile(null);
-            
+
             const fileInput = document.getElementById('csv-file-input');
             if (fileInput) fileInput.value = '';
 
@@ -130,8 +132,17 @@ const AdminRegistrationPage = () => {
                 Upload a CSV file to register multiple students at once
             </Typography>
 
+            <Box sx={{ mb: 4 }}>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => navigate('/users/create')}
+                    sx={{ px: 4, py: 1.5 }}
+                >
+                    Register Single Student
+                </Button>
+            </Box>
             <Grid container spacing={4}>
-                {/* Upload Section */}
                 <Grid item xs={12} md={8}>
                     <Card elevation={3}>
                         <CardContent sx={{ p: 4 }}>
@@ -146,7 +157,7 @@ const AdminRegistrationPage = () => {
                                 </Alert>
                             )}
 
-                            <Box 
+                            <Box
                                 sx={{
                                     border: '2px dashed',
                                     borderColor: file ? 'success.main' : 'grey.300',
@@ -197,7 +208,7 @@ const AdminRegistrationPage = () => {
                                 >
                                     {uploading ? 'Registering Students...' : 'Register Students'}
                                 </Button>
-                                
+
                                 <Button
                                     variant="outlined"
                                     onClick={downloadSampleCsv}
@@ -218,13 +229,13 @@ const AdminRegistrationPage = () => {
                                 <InfoIcon sx={{ mr: 1, color: 'info.main' }} />
                                 CSV Format Requirements
                             </Typography>
-                            
+
                             <List dense>
                                 <ListItem>
                                     <ListItemIcon>
                                         <CheckCircle fontSize="small" color="success" />
                                     </ListItemIcon>
-                                    <ListItemText 
+                                    <ListItemText
                                         primary="CSV file with headers"
                                         secondary="Name, Surname, Email, Index, Student Program"
                                     />
@@ -233,7 +244,7 @@ const AdminRegistrationPage = () => {
                                     <ListItemIcon>
                                         <CheckCircle fontSize="small" color="success" />
                                     </ListItemIcon>
-                                    <ListItemText 
+                                    <ListItemText
                                         primary="Valid email addresses"
                                         secondary="Each student needs a unique email"
                                     />
@@ -242,7 +253,7 @@ const AdminRegistrationPage = () => {
                                     <ListItemIcon>
                                         <CheckCircle fontSize="small" color="success" />
                                     </ListItemIcon>
-                                    <ListItemText 
+                                    <ListItemText
                                         primary="Student program name"
                                         secondary="Must match existing programs"
                                     />
@@ -251,7 +262,7 @@ const AdminRegistrationPage = () => {
                                     <ListItemIcon>
                                         <Email fontSize="small" color="primary" />
                                     </ListItemIcon>
-                                    <ListItemText 
+                                    <ListItemText
                                         primary="Automatic email sending"
                                         secondary="Students receive login credentials via email"
                                     />
@@ -261,7 +272,7 @@ const AdminRegistrationPage = () => {
                             <Divider sx={{ my: 2 }} />
 
                             <Typography variant="body2" color="text.secondary">
-                                <strong>Note:</strong> Each student will receive a randomly generated password 
+                                <strong>Note:</strong> Each student will receive a randomly generated password
                                 and must change it on first login for security.
                             </Typography>
                         </CardContent>
@@ -286,14 +297,14 @@ const AdminRegistrationPage = () => {
                     {results && (
                         <Box>
                             <Alert severity="success" sx={{ mb: 3 }}>
-                                Successfully registered {results.length} students! 
+                                Successfully registered {results.length} students!
                                 Each student has been sent their login credentials via email.
                             </Alert>
-                            
+
                             <Typography variant="h6" sx={{ mb: 2 }}>
                                 Registered Students:
                             </Typography>
-                            
+
                             <Table size="small">
                                 <TableHead>
                                     <TableRow>
@@ -312,9 +323,9 @@ const AdminRegistrationPage = () => {
                                             <TableCell>{student.index || '-'}</TableCell>
                                             <TableCell>{student.studentProgram?.name || '-'}</TableCell>
                                             <TableCell align="center">
-                                                <Chip 
-                                                    label="Registered" 
-                                                    color="success" 
+                                                <Chip
+                                                    label="Registered"
+                                                    color="success"
                                                     size="small"
                                                     icon={<CheckCircle />}
                                                 />
